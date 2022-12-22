@@ -1,0 +1,30 @@
+{
+  "name": "@dlsl/hardhat-gobind",
+  "version": "1.0.0",
+  "description": "Generation of smart-contract bindings in Golang",
+  "main": "dist/src/index.ts",
+  "types": "dist/src/index.d.ts",
+  "files": [
+    "dist/src/",
+    "src/",
+    "LICENSE",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/distributedlab-solidity-library/hardhat-gobind.git"
+  },
+  "keywords": [
+    "ethereum",
+    "solidity"
+  ],
+  "author": "Distributed Lab",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/distributedlab-solidity-library/hardhat-gobind/issues"
+  },
+  "homepage": "https://github.com/distributedlab-solidity-library/hardhat-gobind#readme",
+  "peerDependencies": {
+    "hardhat": "^2.12.4"
+  }
+}
