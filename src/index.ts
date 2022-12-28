@@ -33,7 +33,7 @@ const gobind: ActionType<BindingArgs> = async ({ output, compile, deployable }, 
 
   const art = await hre.artifacts.getAllFullyQualifiedNames()
   console.log(`[GOBIND:INFO] Generated bindings for ${art.length} contracts`)
-};
+}
 
 task(TASK_GOBIND, 'Generate Go bindings for compiled contracts')
   .addOptionalParam('output', 'Output directory for generated bindings (Go package name is derived from it)', undefined, types.string)

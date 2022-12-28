@@ -1,4 +1,4 @@
-import { ConfigExtender } from "hardhat/types";
+import { ConfigExtender } from "hardhat/types"
 
 export const getDefaultGoBindConfig: ConfigExtender = (resolvedConfig, config) => {
   const defaultConfig = {
@@ -6,14 +6,14 @@ export const getDefaultGoBindConfig: ConfigExtender = (resolvedConfig, config) =
     deployable: false,
     runOnCompile: false,
     abigenPath: './node_modules/hardhat-gobind/bin/abigen'
-  };
+  }
 
   if (config.gobind === undefined) {
-    resolvedConfig.gobind = defaultConfig;
+    resolvedConfig.gobind = defaultConfig
     return
   }
 
-  const { cloneDeep } = require("lodash");
-  const customConfig = cloneDeep(config.gobind);
-  resolvedConfig.gobind = { ...defaultConfig, ...customConfig };
-};
+  const { cloneDeep } = require("lodash")
+  const customConfig = cloneDeep(config.gobind)
+  resolvedConfig.gobind = { ...defaultConfig, ...customConfig }
+}

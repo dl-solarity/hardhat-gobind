@@ -1,2 +1,2 @@
-export const pluginName = "@dlsl/hardhat-gobind";
-export const TASK_GOBIND = "gobind";
+export const pluginName = "@dlsl/hardhat-gobind"
+export const TASK_GOBIND = "gobind"

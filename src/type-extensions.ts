@@ -1,13 +1,13 @@
-import "hardhat/types/config";
+import "hardhat/types/config"
 
-import { DlGoBindConfig, DlGoBindUserConfig } from "./types";
+import { DlGoBindConfig, DlGoBindUserConfig } from "./types"
 
 declare module "hardhat/types/config" {
   interface HardhatConfig {
-    gobind: DlGoBindConfig;
+    gobind: DlGoBindConfig
   }
 
   interface HardhatUserConfig {
-    gobind?: DlGoBindUserConfig;
+    gobind?: DlGoBindUserConfig
   }
 }

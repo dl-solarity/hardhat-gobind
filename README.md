@@ -15,13 +15,13 @@ npm install --save-dev @dlsl/hardhat-gobind
 And add the following statement to your `hardhat.config.js`:
 
 ```js
-require("@dlsl/hardhat-gobind");
+require("@dlsl/hardhat-gobind")
 ```
 
 Or, if you are using TypeScript, add this to your `hardhat.config.ts`:
 
 ```ts
-import "@dlsl/hardhat-gobind";
+import "@dlsl/hardhat-gobind"
 ```
 
 ## Tasks
@@ -48,7 +48,7 @@ module.exports = {
     outDir: "./artifacts/gobind",
     runOnCompile: false,
   },
-};
+}
 ```
 
 ### Parameter explanation
