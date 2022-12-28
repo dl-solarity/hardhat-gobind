@@ -1,11 +1,7 @@
-import './type-extensions'
-
 import { TASK_CLEAN, TASK_COMPILE } from 'hardhat/builtin-tasks/task-names'
 import { extendConfig, task, types } from 'hardhat/config'
-import { stat, rm } from "fs/promises"
-import { existsSync } from "fs"
-import { resolve } from "path"
 
+import './type-extensions'
 import { getDefaultGoBindConfig } from './config'
 import { TASK_GOBIND } from './constants'
 import { ActionType } from 'hardhat/types'
@@ -42,23 +38,9 @@ task(TASK_COMPILE)
   })
 
 task(TASK_CLEAN, 'Clears the cache and deletes all artifacts')
-  .setAction(async ({ global }: { global: boolean }, { config }, runSuper) => {
-    if (global) {
-      return runSuper()
-    }
-
-    const dir = resolve(config.gobind.outDir)
-    if (!existsSync(dir)) {
-      return runSuper()
-    }
-
-    const dirStats = await stat(dir)
-    if (!dirStats.isDirectory()) {
-      console.log(`Warning: path is not a directory, skipping it: ${dir}`)
-      return runSuper()
-    }
-
-    await rm(dir, { recursive: true, force: true })
-    return runSuper()
+  .setAction(async ({ global }: { global: boolean }, hre, runSuper) => {
+    if (!global)
+      await new Generator(hre).clean()
+    await runSuper()
   },
   )

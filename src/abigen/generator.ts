@@ -3,6 +3,7 @@ import { HardhatRuntimeEnvironment } from "hardhat/types"
 import _ from "lodash"
 import { basename, resolve } from "path"
 import { existsSync, mkdirSync } from "fs"
+import { stat, rm } from "fs/promises"
 
 export class Generator {
     private pkgName: string
@@ -34,5 +35,18 @@ export class Generator {
             // todo: try exec async
             execSync(cmd)
         }
+    }
+
+    async clean() {
+        const dir = resolve(this.outDir)
+        if (!existsSync(dir)) return
+
+        const dirStats = await stat(dir)
+        if (!dirStats.isDirectory()) {
+            console.log(`Warning: path is not a directory, skipping it: ${dir}`)
+            return
+        }
+
+        await rm(dir, { recursive: true, force: true })
     }
 }
