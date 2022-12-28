@@ -3,15 +3,14 @@ import { HardhatRuntimeEnvironment } from "hardhat/types"
 import _ from "lodash"
 import { basename, resolve } from "path"
 import { existsSync, mkdirSync } from "fs"
-import { stat, rm } from "fs/promises"
+import { stat, readdir, rm } from "fs/promises"
 
 export class Generator {
     private pkgName: string
     private outDir: string
     private dirExists: boolean
     private abigenPath: string
-    // I need HRE not only for names, but also for reading artifacts
-    // fixme: should I only pass hre.artifacts and outDir?
+    // fixme: should I only pass hre.artifacts, outDir and abigenPath?
     constructor(private hre: HardhatRuntimeEnvironment) {
         this.outDir = resolve(hre.config.gobind.outDir)
         this.abigenPath = resolve(hre.config.gobind.abigenPath)
@@ -40,15 +39,19 @@ export class Generator {
     }
 
     async clean() {
-        const dir = resolve(this.outDir) // fixme: use this.dirExists
-        if (!existsSync(dir)) return
+        if (!this.dirExists) return
 
-        const dirStats = await stat(dir)
+        const dirStats = await stat(this.outDir)
         if (!dirStats.isDirectory()) {
-            console.log(`Warning: path is not a directory, skipping it: ${dir}`)
-            return
+            throw new Error(`outDir path is not a directory: ${this.outDir}`)
         }
 
-        await rm(dir, { recursive: true, force: true })
+        const contents = await readdir(this.outDir, { withFileTypes: true })
+        contents.forEach(f => {
+            if (!f.isFile())
+                throw new Error(`artifact '${this.outDir}/${f.name}' is not a file`)
+        })
+
+        await rm(this.outDir, { recursive: true, force: true })
     }
 }

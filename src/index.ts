@@ -23,7 +23,7 @@ const gobind: ActionType<BindingArgs> = async ({ output, compile }, hre) => {
 
   await new Generator(hre).generateAll()
   const art = await hre.artifacts.getAllFullyQualifiedNames()
-  console.log(`Generating bindings for ${art.length} contracts`)
+  console.log(`[GOBIND:INFO] Generating bindings for ${art.length} contracts`)
 };
 
 task(TASK_GOBIND, 'Generate Go bindings for compiled contracts')
@@ -43,7 +43,11 @@ task(TASK_COMPILE)
 task(TASK_CLEAN, 'Clears the cache and deletes all artifacts')
   .setAction(async ({ global }: { global: boolean }, hre, runSuper) => {
     if (!global)
-      await new Generator(hre).clean()
+      try {
+        await new Generator(hre).clean()
+      } catch (err) {
+        console.log(`[GOBIND:ERROR] Generated resources are not cleaned: ${(err as Error).message}`)
+      }
 
     await runSuper()
   },
