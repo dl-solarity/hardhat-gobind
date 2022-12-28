@@ -1,9 +1,13 @@
-import { exec, execSync } from "child_process"
+import { exec as execCallback } from "child_process"
 import { Artifact, Artifacts, HardhatRuntimeEnvironment } from "hardhat/types"
 import _ from "lodash"
 import { basename, resolve } from "path"
 import { existsSync } from "fs"
 import { mkdir, stat, readdir, rm, writeFile } from "fs/promises"
+import { promisify } from "util"
+
+// For some reason, callback in exec() is not called while running on HRE, although it is called outside HRE or with timeout
+const exec = promisify(execCallback)
 
 export class Generator {
     private abigenPath: string
@@ -44,12 +48,7 @@ export class Generator {
                 continue
             }
 
-            // todo: try to make exec more beautiful with args, also handle error in callback
-            exec(cmdBase, (err, _stdout, _stderr) => {
-                if (err)
-                    throw new Error(`failed to generate bindings: ${err}`)
-            })
-            // execSync(cmdBase)
+            await exec(cmdBase)
         }
     }
 
@@ -71,15 +70,10 @@ export class Generator {
     }
 
     private async generateWithBytecode(artifact: Artifact, cmdBase: string) {
-        // Callback for exec is not executed. It works outside of hardhat, and doesn't inside.
         const binPath = `${this.outDir}/${artifact.contractName}.bin`
         await writeFile(binPath, artifact.bytecode)
         const cmd = `${cmdBase} --bin ${binPath}`
-        exec(cmd, async (err, _stdout, _stderr) => {
-            if (err)
-                throw new Error(`failed to generate bindings: ${err}`)
-            await rm(binPath)
-        })
-        // execSync(cmd)
+        await exec(cmd)
+        await rm(binPath)
     }
 }
