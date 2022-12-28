@@ -3,7 +3,8 @@ import { ConfigExtender } from "hardhat/types";
 export const getDefaultGoBindConfig: ConfigExtender = (resolvedConfig, config) => {
   const defaultConfig = {
     outDir: './artifacts/gobind',
-    runOnCompile: false
+    runOnCompile: false,
+    abigenPath: './node_modules/hardhat-gobind/bin/abigen'
   };
 
   if (config.gobind === undefined) {

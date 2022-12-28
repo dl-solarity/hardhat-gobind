@@ -17,8 +17,10 @@ extendConfig(getDefaultGoBindConfig)
 const gobind: ActionType<BindingArgs> = async ({ output, compile }, hre) => {
   if (output !== undefined)
     hre.config.gobind.outDir = output
+
   if (compile)
     return hre.run(TASK_COMPILE, { generateBind: true })
+
   await new Generator(hre).generateAll()
   const art = await hre.artifacts.getAllFullyQualifiedNames()
   console.log(`Generating bindings for ${art.length} contracts`)
@@ -33,6 +35,7 @@ task(TASK_COMPILE)
   .addFlag('generateBind', 'Generate Go bindings after compilation')
   .setAction(async ({ generateBind }: { generateBind: boolean }, { config, run }, runSuper) => {
     await runSuper()
+
     if (config.gobind.runOnCompile || generateBind)
       await run(TASK_GOBIND, { compile: false })
   })
@@ -41,6 +44,7 @@ task(TASK_CLEAN, 'Clears the cache and deletes all artifacts')
   .setAction(async ({ global }: { global: boolean }, hre, runSuper) => {
     if (!global)
       await new Generator(hre).clean()
+
     await runSuper()
   },
   )

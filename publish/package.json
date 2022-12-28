@@ -5,6 +5,7 @@
   "main": "dist/src/index.ts",
   "types": "dist/src/index.d.ts",
   "files": [
+    "bin/",
     "dist/src/",
     "src/",
     "LICENSE",
