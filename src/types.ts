@@ -1,5 +1,6 @@
 export interface DlGoBindConfig {
   outDir: string
+  deployable: boolean
   runOnCompile: boolean
   abigenPath: string
 }

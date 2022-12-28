@@ -10,25 +10,35 @@ import { Generator } from './abigen/generator'
 interface BindingArgs {
   output?: string
   compile: boolean
+  deployable: boolean
 }
 
 extendConfig(getDefaultGoBindConfig)
 
-const gobind: ActionType<BindingArgs> = async ({ output, compile }, hre) => {
+const gobind: ActionType<BindingArgs> = async ({ output, compile, deployable }, hre) => {
   if (output !== undefined)
     hre.config.gobind.outDir = output
+  if (deployable)
+    hre.config.gobind.deployable = true
 
   if (compile)
-    return hre.run(TASK_COMPILE, { generateBind: true })
+    await hre.run(TASK_COMPILE, { generateBind: false })
 
-  await new Generator(hre).generateAll()
+  try {
+    await new Generator(hre).generateAll()
+  } catch (err) {
+    console.log(`[GOBIND:ERROR] Failed to generate bindings: ${(err as Error).message}`)
+    return
+  }
+
   const art = await hre.artifacts.getAllFullyQualifiedNames()
-  console.log(`[GOBIND:INFO] Generating bindings for ${art.length} contracts`)
+  console.log(`[GOBIND:INFO] Generated bindings for ${art.length} contracts`)
 };
 
 task(TASK_GOBIND, 'Generate Go bindings for compiled contracts')
   .addOptionalParam('output', 'Output directory for generated bindings (Go package name is derived from it)', undefined, types.string)
   .addFlag('compile', 'Run compile task before the generation')
+  .addFlag('deployable', 'Generate contract bytecode for ability to deploy it from Go code')
   .setAction(gobind)
 
 task(TASK_COMPILE)
