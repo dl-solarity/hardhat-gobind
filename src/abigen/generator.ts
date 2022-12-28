@@ -14,13 +14,27 @@ export class Generator {
     private artifacts: Artifacts
     private deployable: boolean
     private dirExists: boolean
+    private language: string
     private outDir: string
     private pkgName: string
+
+    private langExt = (): string => {
+        switch (this.language) {
+            case "go":
+            case "java":
+                return this.language
+            case "objc":
+                return "m"
+            default:
+                throw new Error(`language ${this.language} is not supported by abigen`)
+        }
+    }
 
     constructor(hre: HardhatRuntimeEnvironment) {
         this.abigenPath = resolve(hre.config.gobind.abigenPath)
         this.artifacts = hre.artifacts
         this.deployable = hre.config.gobind.deployable
+        this.language = hre.config.gobind.language
         this.outDir = resolve(hre.config.gobind.outDir)
         this.dirExists = existsSync(this.outDir)
         this.pkgName = _.camelCase(basename(this.outDir))
@@ -42,7 +56,7 @@ export class Generator {
             const abi = JSON.stringify(artifact.abi)
             const contract = artifact.contractName
 
-            const cmdBase = `echo '${abi}' | ${this.abigenPath} --pkg ${this.pkgName} --type ${contract} --out ${this.outDir}/${contract}.go --abi -`
+            const cmdBase = `echo '${abi}' | ${this.abigenPath} --pkg ${this.pkgName} --type ${contract} --lang ${this.language} --out ${this.outDir}/${contract}.${this.langExt()} --abi -`
             if (this.deployable) {
                 await this.generateWithBytecode(artifact, cmdBase)
                 continue

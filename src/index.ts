@@ -9,15 +9,18 @@ import { Generator } from './abigen/generator'
 
 interface BindingArgs {
   output?: string
+  lang?: string
   compile: boolean
   deployable: boolean
 }
 
 extendConfig(getDefaultGoBindConfig)
 
-const gobind: ActionType<BindingArgs> = async ({ output, compile, deployable }, hre) => {
+const gobind: ActionType<BindingArgs> = async ({ output, compile, deployable, lang }, hre) => {
   if (output !== undefined)
     hre.config.gobind.outDir = output
+  if (lang !== undefined)
+    hre.config.gobind.language = lang
   if (deployable)
     hre.config.gobind.deployable = true
 
@@ -37,6 +40,7 @@ const gobind: ActionType<BindingArgs> = async ({ output, compile, deployable }, 
 
 task(TASK_GOBIND, 'Generate Go bindings for compiled contracts')
   .addOptionalParam('output', 'Output directory for generated bindings (Go package name is derived from it)', undefined, types.string)
+  .addOptionalParam('lang', 'Destination language for the bindings (go, java, objc)', undefined, types.string)
   .addFlag('compile', 'Run compile task before the generation')
   .addFlag('deployable', 'Generate contract bytecode for ability to deploy it from Go code')
   .setAction(gobind)
