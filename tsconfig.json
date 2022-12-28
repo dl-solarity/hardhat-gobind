@@ -10,8 +10,9 @@
     "noEmitOnError": true,
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
-    "outDir": "../hardhat-tutorial/node_modules/hardhat-gobind",
-    "composite": true
+    "outDir": "./dist",
+    "composite": true,
+    "allowJs": true
   },
   "exclude": [
     "./dist",

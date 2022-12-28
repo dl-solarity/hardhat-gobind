@@ -1,20 +1,19 @@
-import { ConfigExtender } from "hardhat/types"
+import { ConfigExtender } from "hardhat/types";
 
 export const getDefaultGoBindConfig: ConfigExtender = (resolvedConfig, config) => {
   const defaultConfig = {
-    outDir: './artifacts/gobind',
+    outDir: "./generated-types/gobind",
     deployable: false,
     runOnCompile: false,
     useJava: false,
-    abigenPath: './node_modules/hardhat-gobind/bin/abigen'
-  }
+  };
 
   if (config.gobind === undefined) {
-    resolvedConfig.gobind = defaultConfig
-    return
+    resolvedConfig.gobind = defaultConfig;
+    return;
   }
 
-  const { cloneDeep } = require("lodash")
-  const customConfig = cloneDeep(config.gobind)
-  resolvedConfig.gobind = { ...defaultConfig, ...customConfig }
-}
+  const { cloneDeep } = require("lodash");
+  const customConfig = cloneDeep(config.gobind);
+  resolvedConfig.gobind = { ...defaultConfig, ...customConfig };
+};
