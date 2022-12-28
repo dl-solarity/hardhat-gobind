@@ -1,24 +1,17 @@
 import { ConfigExtender } from "hardhat/types";
 
-export const deployConfigExtender: ConfigExtender = (resolvedConfig, config) => {
+export const getDefaultGoBindConfig: ConfigExtender = (resolvedConfig, config) => {
   const defaultConfig = {
-    from: -1,
-    to: -1,
-    only: -1,
-    skip: -1,
-    confirmations: 0,
-    verify: false,
-    pathToMigrations: "./deploy",
-    skipVerificationErrors: ["already verified"],
-    verificationAttempts: 1,
+    outDir: './artifacts/gobind',
+    runOnCompile: false
   };
 
-  if (config.migrate !== undefined) {
-    const { cloneDeep } = require("lodash");
-    const customConfig = cloneDeep(config.migrate);
-
-    resolvedConfig.migrate = { ...defaultConfig, ...customConfig };
-  } else {
-    resolvedConfig.migrate = defaultConfig;
+  if (config.gobind === undefined) {
+    resolvedConfig.gobind = defaultConfig;
+    return
   }
+
+  const { cloneDeep } = require("lodash");
+  const customConfig = cloneDeep(config.gobind);
+  resolvedConfig.gobind = { ...defaultConfig, ...customConfig };
 };

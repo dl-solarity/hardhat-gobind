@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/distributedlab-solidity-library/hardhat-gobind#readme",
   "devDependencies": {
+    "@types/lodash": "^4.14.191",
     "hardhat": "^2.12.4"
   }
 }
