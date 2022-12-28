@@ -9,20 +9,20 @@ import { Generator } from './abigen/generator'
 
 interface BindingArgs {
   output?: string
-  lang?: string
   compile: boolean
   deployable: boolean
+  java: boolean
 }
 
 extendConfig(getDefaultGoBindConfig)
 
-const gobind: ActionType<BindingArgs> = async ({ output, compile, deployable, lang }, hre) => {
+const gobind: ActionType<BindingArgs> = async ({ output, compile, deployable, java }, hre) => {
   if (output !== undefined)
     hre.config.gobind.outDir = output
-  if (lang !== undefined)
-    hre.config.gobind.language = lang
   if (deployable)
     hre.config.gobind.deployable = true
+  if (java)
+    hre.config.gobind.useJava = true
 
   if (compile)
     await hre.run(TASK_COMPILE, { generateBind: false })
@@ -40,9 +40,9 @@ const gobind: ActionType<BindingArgs> = async ({ output, compile, deployable, la
 
 task(TASK_GOBIND, 'Generate Go bindings for compiled contracts')
   .addOptionalParam('output', 'Output directory for generated bindings (Go package name is derived from it)', undefined, types.string)
-  .addOptionalParam('lang', 'Destination language for the bindings (go, java, objc)', undefined, types.string)
   .addFlag('compile', 'Run compile task before the generation')
   .addFlag('deployable', 'Generate contract bytecode for ability to deploy it from Go code')
+  .addFlag('java', 'Generate Java bindings instead of Go')
   .setAction(gobind)
 
 task(TASK_COMPILE)

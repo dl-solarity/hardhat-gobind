@@ -2,7 +2,7 @@ export interface DlGoBindConfig {
   outDir: string
   deployable: boolean
   runOnCompile: boolean
-  language: string
+  useJava: boolean
   abigenPath: string
 }
 

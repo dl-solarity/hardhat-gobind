@@ -1,4 +1,3 @@
-import { getOpcodeLength } from "hardhat/internal/hardhat-network/stack-traces/opcodes"
 import { ConfigExtender } from "hardhat/types"
 
 export const getDefaultGoBindConfig: ConfigExtender = (resolvedConfig, config) => {
@@ -6,7 +5,7 @@ export const getDefaultGoBindConfig: ConfigExtender = (resolvedConfig, config) =
     outDir: './artifacts/gobind',
     deployable: false,
     runOnCompile: false,
-    language: 'go',
+    useJava: false,
     abigenPath: './node_modules/hardhat-gobind/bin/abigen'
   }
 
