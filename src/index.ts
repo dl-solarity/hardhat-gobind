@@ -26,7 +26,7 @@ const gobind: ActionType<BindingArgs> = async ({ output, deployable, compile }, 
   }
 
   try {
-    await new Generator(hre).generateAll();
+    await new Generator(hre).generate();
   } catch (e: any) {
     throw new NomicLabsHardhatPluginError(pluginName, e.message);
   }
@@ -49,7 +49,7 @@ task(TASK_GOBIND, "Generate Go bindings for compiled contracts")
 
 task(TASK_COMPILE)
   .addFlag("generateBindings", "Generate bindings after compilation")
-  .setAction(async ({ generateBindings }: { generateBindings: boolean }, { config, run }, runSuper) => {
+  .setAction(async ({ generateBindings }: { generateBindings: boolean; }, { config, run }, runSuper) => {
     await runSuper();
 
     if (config.gobind.runOnCompile || generateBindings) {
@@ -58,7 +58,7 @@ task(TASK_COMPILE)
   });
 
 task(TASK_CLEAN, "Clears the cache and deletes all artifacts").setAction(
-  async ({ global }: { global: boolean }, hre, runSuper) => {
+  async ({ global }: { global: boolean; }, hre, runSuper) => {
     if (!global)
       try {
         await new Generator(hre).clean();

@@ -5,6 +5,8 @@ export const getDefaultGoBindConfig: ConfigExtender = (resolvedConfig, config) =
     outdir: "./generated-types/bindings",
     deployable: false,
     runOnCompile: false,
+    onlyFiles: [],
+    skipFiles: [],
   };
 
   if (config.gobind === undefined) {

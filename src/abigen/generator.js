@@ -1,6 +1,5 @@
 require("./wasm/wasm_exec_node");
 
-const camelCase = require("lodash/camelCase");
 const path = require("path");
 const fs = require("fs");
 const fsp = require("fs/promises");
@@ -14,17 +13,41 @@ module.exports = class Generator {
     this.artifacts = hre.artifacts;
     this.outDir = path.resolve(hre.config.gobind.outdir);
     this.deployable = hre.config.gobind.deployable;
+    this.onlyFiles = hre.config.gobind.onlyFiles;
+    this.skipFiles = hre.config.gobind.skipFiles;
   }
 
-  async generateAll() {
+  async generate() {
     console.log("\nGenerating bindings...");
-
     const names = await this.artifacts.getAllFullyQualifiedNames();
 
-    await this.generate(names);
+    const filterer = async (n) => {
+      const art = await this.artifacts.readArtifact(n);
+      return (
+        (this.onlyFiles.length == 0 ||
+          this.onlyFiles.includes(art.sourceName)) &&
+        !this.skipFiles.includes(art.sourceName)
+      );
+    };
+
+    await this._generate(names.filter(filterer));
   }
 
-  async generate(artifactNames) {
+  async clean() {
+    if (!fs.existsSync(this.outDir)) {
+      return;
+    }
+
+    const dirStats = await fsp.stat(this.outDir);
+
+    if (!dirStats.isDirectory()) {
+      throw new Error(`outdir is not a directory: ${this.outDir}`);
+    }
+
+    await fsp.rm(this.outDir, { recursive: true });
+  }
+
+  async _generate(artifactNames) {
     for (const name of artifactNames) {
       const artifact = await this.artifacts.readArtifact(name);
       const contract = artifact.contractName;
@@ -57,20 +80,6 @@ module.exports = class Generator {
 
       await fsp.rm(abiPath);
     }
-  }
-
-  async clean() {
-    if (!fs.existsSync(this.outDir)) {
-      return;
-    }
-
-    const dirStats = await fsp.stat(this.outDir);
-
-    if (!dirStats.isDirectory()) {
-      throw new Error(`outdir is not a directory: ${this.outDir}`);
-    }
-
-    await fsp.rm(this.outDir, { recursive: true });
   }
 
   async abigen(path, argv) {
