@@ -1,10 +1,10 @@
 # Hardhat GoBind
 
-[Hardhat](https://hardhat.org) plugin to simplify generation of smart-contract bindings for Golang.
+[Hardhat](https://hardhat.org) plugin to simplify generation of smart contract bindings for Golang.
 
 ## What
 
-This plugin helps you generate `.go` file with bindings to call a smart-contract from Go code. It takes contract ABI from Hardhat Runtime Environment and calls `abigen` command, which is Go binary build from [go-ethereum/cmd/abigen](https://github.com/ethereum/go-ethereum/tree/master/cmd/abigen) Go module.
+This plugin helps you generate `.go` files with bindings to call smart contracts from Go code. It uses `abigen`, a `wasm` binary, build from [go-ethereum/cmd/abigen](https://github.com/ethereum/go-ethereum/tree/master/cmd/abigen) Go module.
 
 ## Installation
 
@@ -26,9 +26,10 @@ import "@dlsl/hardhat-gobind"
 
 ## Tasks
 
-The generation can be run either with built-in `compile` or the provided `gobind` task.
+The bindings generation can be run either with built-in `compile` or the provided `gobind` task.
 
 To view the available options, run these help commands:
+
 ```bash
 npx hardhat help compile
 npx hardhat help gobind
@@ -40,12 +41,13 @@ This plugin does not extend the environment.
 
 ## Usage
 
-You need to add the following config to your `hardhat.config.js` file:
+You may add the following config to your *hardhat config* file:
 
 ```js
 module.exports = {
-  migrate: {
-    outDir: "./artifacts/gobind",
+  gobind: {
+    outdir: "./generated-types/gobindings",
+    deployable: false,
     runOnCompile: false,
   },
 }
@@ -53,6 +55,6 @@ module.exports = {
 
 ### Parameter explanation
 
-- `outDir` : Directory to generate bindings into
-- `runOnCompile` : Whether to run binding generation on compile, may be disabled for increasing performance purposes
-
+- `outdir` : The directory where the generated bindings will be places
+- `deployable` : The flag to generate the bindings with the bytecode (makes them deployable within Go)
+- `runOnCompile` : Whether to run bindings generation on compilation

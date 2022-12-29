@@ -2,10 +2,9 @@ import { ConfigExtender } from "hardhat/types";
 
 export const getDefaultGoBindConfig: ConfigExtender = (resolvedConfig, config) => {
   const defaultConfig = {
-    outDir: "./generated-types/gobind",
+    outdir: "./generated-types/bindings",
     deployable: false,
     runOnCompile: false,
-    useJava: false,
   };
 
   if (config.gobind === undefined) {

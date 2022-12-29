@@ -10,35 +10,38 @@ module.exports = class Generator {
     this.abigenPath = path.resolve(
       "./node_modules/@dlsl/hardhat-gobind/bin/abigen.wasm"
     );
+    this.lang = "go";
     this.artifacts = hre.artifacts;
+    this.outDir = path.resolve(hre.config.gobind.outdir);
     this.deployable = hre.config.gobind.deployable;
-    this.lang = hre.config.gobind.useJava ? "java" : "go";
-    this.outDir = path.resolve(hre.config.gobind.outDir);
-    this.dirExists = fs.existsSync(this.outDir);
-    this.pkgName = camelCase(path.basename(this.outDir));
   }
 
   async generateAll() {
+    console.log("\nGenerating bindings...");
+
     const names = await this.artifacts.getAllFullyQualifiedNames();
 
     await this.generate(names);
   }
 
   async generate(artifactNames) {
-    if (!this.dirExists) {
-      await fsp.mkdir(this.outDir);
-
-      this.dirExists = true;
-    }
-
     for (const name of artifactNames) {
       const artifact = await this.artifacts.readArtifact(name);
       const contract = artifact.contractName;
+      const source = artifact.sourceName;
 
       const abiPath = `${this.outDir}/${contract}.abi`;
+      const genDir = `${this.outDir}/${path.dirname(source)}`;
+      const packageName = path
+        .basename(path.dirname(source))
+        .replaceAll("-", "")
+        .replaceAll("_", "")
+        .toLowerCase();
+      const genPath = `${genDir}/${contract}.${this.lang}`;
 
-      const argv = `abigen --abi ${abiPath} --pkg ${this.pkgName} --type ${contract} --lang ${this.lang} --out ${this.outDir}/${contract}.${this.lang}`;
+      const argv = `abigen --abi ${abiPath} --pkg ${packageName} --type ${contract} --lang ${this.lang} --out ${genPath}`;
 
+      await fsp.mkdir(genDir, { recursive: true });
       await fsp.writeFile(abiPath, JSON.stringify(artifact.abi));
 
       if (this.deployable) {
@@ -57,22 +60,17 @@ module.exports = class Generator {
   }
 
   async clean() {
-    if (!this.dirExists) return;
+    if (!fs.existsSync(this.outDir)) {
+      return;
+    }
 
     const dirStats = await fsp.stat(this.outDir);
 
     if (!dirStats.isDirectory()) {
-      throw new Error(`outDir path is not a directory: ${this.outDir}`);
+      throw new Error(`outdir is not a directory: ${this.outDir}`);
     }
 
-    const contents = await fsp.readdir(this.outDir, { withFileTypes: true });
-
-    contents.forEach((f) => {
-      if (!f.isFile())
-        throw new Error(`artifact '${this.outDir}/${f.name}' is not a file`);
-    });
-
-    await fsp.rm(this.outDir, { recursive: true, force: true });
+    await fsp.rm(this.outDir, { recursive: true });
   }
 
   async abigen(path, argv) {
@@ -89,9 +87,8 @@ module.exports = class Generator {
 
       go.run(abigenObj.instance);
       go._pendingEvent = { id: 0 };
-    } catch (err) {
-      console.error(err);
-      process.exit(1);
+    } catch (e) {
+      throw new Error(e.message);
     }
   }
 };

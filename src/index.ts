@@ -2,57 +2,59 @@ const Generator = require("./abigen/generator");
 
 import { TASK_CLEAN, TASK_COMPILE } from "hardhat/builtin-tasks/task-names";
 import { extendConfig, task, types } from "hardhat/config";
+import { NomicLabsHardhatPluginError } from "hardhat/plugins";
 
 import "./type-extensions";
 import { getDefaultGoBindConfig } from "./config";
-import { TASK_GOBIND } from "./constants";
+import { TASK_GOBIND, pluginName } from "./constants";
 import { ActionType } from "hardhat/types";
 
 interface BindingArgs {
   output?: string;
   compile: boolean;
   deployable: boolean;
-  java: boolean;
 }
 
 extendConfig(getDefaultGoBindConfig);
 
-const gobind: ActionType<BindingArgs> = async ({ output, compile, deployable, java }, hre) => {
-  if (output !== undefined) hre.config.gobind.outDir = output;
-  if (deployable) hre.config.gobind.deployable = true;
-  if (java) hre.config.gobind.useJava = true;
+const gobind: ActionType<BindingArgs> = async ({ output, deployable, compile }, hre) => {
+  hre.config.gobind.outdir = output === undefined ? hre.config.gobind.outdir : output;
+  hre.config.gobind.deployable = deployable === undefined ? hre.config.gobind.deployable : deployable;
 
-  if (compile) await hre.run(TASK_COMPILE, { generateBind: false });
+  if (compile) {
+    await hre.run(TASK_COMPILE, { generateBind: false });
+  }
 
   try {
     await new Generator(hre).generateAll();
-  } catch (err) {
-    console.log(`[GOBIND:ERROR] Failed to generate bindings: ${(err as Error).message}`);
-    return;
+  } catch (e: any) {
+    throw new NomicLabsHardhatPluginError(pluginName, e.message);
   }
 
   const artifacts = await hre.artifacts.getAllFullyQualifiedNames();
-  console.log(`[GOBIND:INFO] Generated bindings for ${artifacts.length} contracts`);
+
+  console.log(`\nGenerated bindings for ${artifacts.length} contracts`);
 };
 
 task(TASK_GOBIND, "Generate Go bindings for compiled contracts")
   .addOptionalParam(
-    "output",
-    "Output directory for generated bindings (Go package name is derived from it)",
+    "outdir",
+    "Output directory for generated bindings (Go package name is derived from it as well)",
     undefined,
     types.string
   )
-  .addFlag("compile", "Run compile task before the generation")
-  .addFlag("deployable", "Generate contract bytecode for ability to deploy it from Go code")
-  .addFlag("java", "Generate Java bindings instead of Go")
+  .addFlag("deployable", "Generate bindings with the bytecode in order to deploy the contracts within Go")
+  .addFlag("compile", "Compile smart contracts before the generation")
   .setAction(gobind);
 
 task(TASK_COMPILE)
-  .addFlag("generateBind", "Generate Go bindings after compilation")
-  .setAction(async ({ generateBind }: { generateBind: boolean }, { config, run }, runSuper) => {
+  .addFlag("generateBindings", "Generate bindings after compilation")
+  .setAction(async ({ generateBindings }: { generateBindings: boolean }, { config, run }, runSuper) => {
     await runSuper();
 
-    if (config.gobind.runOnCompile || generateBind) await run(TASK_GOBIND, { compile: false });
+    if (config.gobind.runOnCompile || generateBindings) {
+      await run(TASK_GOBIND, { compile: false });
+    }
   });
 
 task(TASK_CLEAN, "Clears the cache and deletes all artifacts").setAction(
@@ -60,8 +62,8 @@ task(TASK_CLEAN, "Clears the cache and deletes all artifacts").setAction(
     if (!global)
       try {
         await new Generator(hre).clean();
-      } catch (err) {
-        console.log(`[GOBIND:ERROR] Generated resources are not cleaned: ${(err as Error).message}`);
+      } catch (e: any) {
+        throw new NomicLabsHardhatPluginError(pluginName, e.message);
       }
 
     await runSuper();
