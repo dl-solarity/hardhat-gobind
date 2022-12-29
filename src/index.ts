@@ -1,84 +1,71 @@
-require("@nomiclabs/hardhat-etherscan");
+const Generator = require("./abigen/generator");
 
-import { TASK_COMPILE } from "hardhat/builtin-tasks/task-names";
-
+import { TASK_CLEAN, TASK_COMPILE } from "hardhat/builtin-tasks/task-names";
 import { extendConfig, task, types } from "hardhat/config";
+import { NomicLabsHardhatPluginError } from "hardhat/plugins";
+
+import "./type-extensions";
+import { getDefaultGoBindConfig } from "./config";
+import { TASK_GOBIND, pluginName } from "./constants";
 import { ActionType } from "hardhat/types";
 
-import { deployConfigExtender } from "./config";
-import { TASK_DEPLOY } from "./constants";
-import { Migrations } from "./deployer/migrations";
-
-export { logTransaction, logContracts } from "./logger/logger";
-
-interface DeploymentArgs {
-  // The migration number from which the migration will be applied.
-  from?: number;
-  // The migration number up to which the migration will be applied.
-  to?: number;
-  // The number of the migration that will be applied. Overrides from and to parameters.
-  only?: number;
-  // The number of migration to skip. Overrides only parameter.
-  skip?: number;
-  // The number defining after how many blocks the verification should start.
-  confirmations?: number;
-  // The number of attempts to verify the contract.
-  verificationAttempts?: number;
-  // The path to the folder with the specified migrations.
-  pathToMigrations?: string;
-  // The flag indicating whether the verification of the contract is needed.
-  verify: boolean;
+interface BindingArgs {
+  output?: string;
+  compile: boolean;
+  deployable: boolean;
 }
 
-extendConfig(deployConfigExtender);
+extendConfig(getDefaultGoBindConfig);
 
-const deploy: ActionType<DeploymentArgs> = async (
-  { from, to, only, skip, confirmations, verificationAttempts, pathToMigrations, verify },
-  env
-) => {
-  // Make sure that contract artifacts are up-to-date.
-  await env.run(TASK_COMPILE, {
-    quiet: true,
-    force: true,
-  });
+const gobind: ActionType<BindingArgs> = async ({ output, deployable, compile }, hre) => {
+  hre.config.gobind.outdir = output === undefined ? hre.config.gobind.outdir : output;
+  hre.config.gobind.deployable = deployable === undefined ? hre.config.gobind.deployable : deployable;
 
-  const migrations = new Migrations(
-    env,
-    !verify ? env.config.migrate.verify : verify,
-    confirmations === undefined ? env.config.migrate.confirmations : confirmations,
-    pathToMigrations === undefined ? env.config.migrate.pathToMigrations : pathToMigrations,
-    from === undefined ? env.config.migrate.from : from,
-    to === undefined ? env.config.migrate.to : to,
-    only === undefined ? env.config.migrate.only : only,
-    skip === undefined ? env.config.migrate.skip : skip,
-    env.config.migrate.skipVerificationErrors === undefined ? [] : env.config.migrate.skipVerificationErrors,
-    verificationAttempts === undefined ? env.config.migrate.verificationAttempts : verificationAttempts
-  );
-  await migrations.migrate();
+  if (compile) {
+    await hre.run(TASK_COMPILE, { generateBind: false });
+  }
+
+  try {
+    await new Generator(hre).generateAll();
+  } catch (e: any) {
+    throw new NomicLabsHardhatPluginError(pluginName, e.message);
+  }
+
+  const artifacts = await hre.artifacts.getAllFullyQualifiedNames();
+
+  console.log(`\nGenerated bindings for ${artifacts.length} contracts`);
 };
 
-task(TASK_DEPLOY, "Deploy contracts")
-  .addOptionalParam("from", "The migration number from which the migration will be applied.", undefined, types.int)
-  .addOptionalParam("to", "The migration number up to which the migration will be applied.", undefined, types.int)
+task(TASK_GOBIND, "Generate Go bindings for compiled contracts")
   .addOptionalParam(
-    "only",
-    "The number of the migration that will be applied. Overrides from and to parameters.",
-    undefined,
-    types.int
-  )
-  .addOptionalParam("skip", "The number of migration to skip. Overrides only parameter.", undefined, types.int)
-  .addFlag("verify", "The flag indicating whether the verification of the contract is needed.")
-  .addOptionalParam(
-    "confirmations",
-    "The number defining after how many blocks the verification should start.",
-    undefined,
-    types.int
-  )
-  .addOptionalParam("verificationAttempts", "The number of attempts to verify the contract.", undefined, types.int)
-  .addOptionalParam(
-    "pathToMigrations",
-    "The path to the folder with the specified migrations.",
+    "outdir",
+    "Output directory for generated bindings (Go package name is derived from it as well)",
     undefined,
     types.string
   )
-  .setAction(deploy);
+  .addFlag("deployable", "Generate bindings with the bytecode in order to deploy the contracts within Go")
+  .addFlag("compile", "Compile smart contracts before the generation")
+  .setAction(gobind);
+
+task(TASK_COMPILE)
+  .addFlag("generateBindings", "Generate bindings after compilation")
+  .setAction(async ({ generateBindings }: { generateBindings: boolean }, { config, run }, runSuper) => {
+    await runSuper();
+
+    if (config.gobind.runOnCompile || generateBindings) {
+      await run(TASK_GOBIND, { compile: false });
+    }
+  });
+
+task(TASK_CLEAN, "Clears the cache and deletes all artifacts").setAction(
+  async ({ global }: { global: boolean }, hre, runSuper) => {
+    if (!global)
+      try {
+        await new Generator(hre).clean();
+      } catch (e: any) {
+        throw new NomicLabsHardhatPluginError(pluginName, e.message);
+      }
+
+    await runSuper();
+  }
+);

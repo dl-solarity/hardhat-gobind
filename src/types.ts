@@ -1,6 +1,7 @@
 export interface DlGoBindConfig {
-  outDir: string
-  runOnCompile: boolean
+  outdir: string;
+  deployable: boolean;
+  runOnCompile: boolean;
 }
 
-export interface DlGoBindUserConfig extends Partial<DlGoBindConfig> { }
+export interface DlGoBindUserConfig extends Partial<DlGoBindConfig> {}

@@ -1,5 +1,4 @@
 import "hardhat/types/config";
-
 import { DlGoBindConfig, DlGoBindUserConfig } from "./types";
 
 declare module "hardhat/types/config" {
