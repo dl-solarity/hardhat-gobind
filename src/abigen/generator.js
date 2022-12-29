@@ -85,7 +85,7 @@ module.exports = class Generator {
         go.importObject
       );
 
-      go.run(abigenObj.instance);
+      await go.run(abigenObj.instance);
       go._pendingEvent = { id: 0 };
     } catch (e) {
       throw new Error(e.message);

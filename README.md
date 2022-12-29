@@ -1,3 +1,5 @@
+[![npm](https://img.shields.io/npm/v/@dlsl/hardhat-gobind.svg)](https://www.npmjs.com/package/@dlsl/hardhat-gobind) [![hardhat](https://hardhat.org/buidler-plugin-badge.svg?1)](https://hardhat.org)
+
 # Hardhat GoBind
 
 [Hardhat](https://hardhat.org) plugin to simplify generation of smart contract bindings for Golang.

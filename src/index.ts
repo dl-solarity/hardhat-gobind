@@ -11,15 +11,15 @@ import { ActionType } from "hardhat/types";
 
 interface BindingArgs {
   output?: string;
-  compile: boolean;
   deployable: boolean;
+  compile: boolean;
 }
 
 extendConfig(getDefaultGoBindConfig);
 
 const gobind: ActionType<BindingArgs> = async ({ output, deployable, compile }, hre) => {
   hre.config.gobind.outdir = output === undefined ? hre.config.gobind.outdir : output;
-  hre.config.gobind.deployable = deployable === undefined ? hre.config.gobind.deployable : deployable;
+  hre.config.gobind.deployable = !deployable ? hre.config.gobind.deployable : deployable;
 
   if (compile) {
     await hre.run(TASK_COMPILE, { generateBind: false });
