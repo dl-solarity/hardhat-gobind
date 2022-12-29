@@ -1,6 +1,6 @@
 {
   "name": "@dlsl/hardhat-gobind",
-  "version": "1.0.0-rc.0",
+  "version": "1.0.0-rc.1",
   "description": "Generation of smart contract bindings for Golang",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
