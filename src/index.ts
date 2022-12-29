@@ -10,15 +10,15 @@ import { TASK_GOBIND, pluginName } from "./constants";
 import { ActionType } from "hardhat/types";
 
 interface BindingArgs {
-  output?: string;
+  outdir?: string;
   deployable: boolean;
   compile: boolean;
 }
 
 extendConfig(getDefaultGoBindConfig);
 
-const gobind: ActionType<BindingArgs> = async ({ output, deployable, compile }, hre) => {
-  hre.config.gobind.outdir = output === undefined ? hre.config.gobind.outdir : output;
+const gobind: ActionType<BindingArgs> = async ({ outdir, deployable, compile }, hre) => {
+  hre.config.gobind.outdir = outdir === undefined ? hre.config.gobind.outdir : outdir;
   hre.config.gobind.deployable = !deployable ? hre.config.gobind.deployable : deployable;
 
   if (compile) {
