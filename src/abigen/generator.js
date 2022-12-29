@@ -21,8 +21,8 @@ module.exports = class Generator {
     console.log("\nGenerating bindings...");
     const names = await this.artifacts.getAllFullyQualifiedNames();
 
-    const filterer = async (n) => {
-      const art = await this.artifacts.readArtifact(n);
+    const filterer = (n) => {
+      const art = this.artifacts.readArtifactSync(n);
       return (
         (this.onlyFiles.length == 0 ||
           this.onlyFiles.includes(art.sourceName)) &&
