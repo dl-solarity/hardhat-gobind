@@ -8,7 +8,8 @@
     "build-local": "npm run compile && npm run lint-fix && bash ./scripts/build-local.sh",
     "clean": "bash ./scripts/clean.sh",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint-fix": "prettier --write \"./**/*.ts\" && prettier --write \"./**/*.js\""
+    "lint-fix": "prettier --write \"./**/*.ts\" && prettier --write \"./**/*.js\"",
+    "publish-to-npm": "npm run compile && npm run lint-fix && bash ./scripts/publish.sh"
   },
   "repository": {
     "type": "git",
