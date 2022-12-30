@@ -15,6 +15,10 @@ module.exports = class Generator {
     this.deployable = hre.config.gobind.deployable;
     this.onlyFiles = hre.config.gobind.onlyFiles.map((p) => path.normalize(p));
     this.skipFiles = hre.config.gobind.skipFiles.map((p) => path.normalize(p));
+    this._verboseLog = (msg) =>
+      hre.config.gobind.verbose
+        ? console.log(`[GOBIND] ${msg}`)
+        : this._contains;
   }
 
   async generate() {
@@ -29,6 +33,11 @@ module.exports = class Generator {
     };
 
     const filtered = names.filter(filterer);
+    this._verboseLog(
+      `${names.length} compiled contracts found, skipping ${
+        names.length - filtered.length
+      } of them\n`
+    );
     await this._generate(filtered);
     return filtered;
   }
@@ -48,6 +57,11 @@ module.exports = class Generator {
   }
 
   async _generate(artifactNames) {
+    const word = this.deployable ? "with" : "without";
+    this._verboseLog(
+      `Generating bindings into ${this.outDir} ${word} deployment method\n`
+    );
+
     for (const name of artifactNames) {
       const artifact = await this.artifacts.readArtifact(name);
       const contract = artifact.contractName;
@@ -64,6 +78,7 @@ module.exports = class Generator {
 
       const argv = `abigen --abi ${abiPath} --pkg ${packageName} --type ${contract} --lang ${this.lang} --out ${genPath}`;
 
+      this._verboseLog(`${contract}: ${source}`);
       await fsp.mkdir(genDir, { recursive: true });
       await fsp.writeFile(abiPath, JSON.stringify(artifact.abi));
 
