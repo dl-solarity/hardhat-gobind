@@ -13,8 +13,8 @@ module.exports = class Generator {
     this.artifacts = hre.artifacts;
     this.outDir = path.resolve(hre.config.gobind.outdir);
     this.deployable = hre.config.gobind.deployable;
-    this.onlyFiles = hre.config.gobind.onlyFiles;
-    this.skipFiles = hre.config.gobind.skipFiles;
+    this.onlyFiles = hre.config.gobind.onlyFiles.map((p) => path.normalize(p));
+    this.skipFiles = hre.config.gobind.skipFiles.map((p) => path.normalize(p));
   }
 
   async generate() {
@@ -22,11 +22,10 @@ module.exports = class Generator {
     const names = await this.artifacts.getAllFullyQualifiedNames();
 
     const filterer = (n) => {
-      const art = this.artifacts.readArtifactSync(n);
+      const src = this.artifacts.readArtifactSync(n).sourceName;
       return (
-        (this.onlyFiles.length == 0 ||
-          this.onlyFiles.includes(art.sourceName)) &&
-        !this.skipFiles.includes(art.sourceName)
+        (this.onlyFiles.length == 0 || this._contains(this.onlyFiles, src)) &&
+        !this._contains(this.skipFiles, src)
       );
     };
 
@@ -80,6 +79,18 @@ module.exports = class Generator {
 
       await fsp.rm(abiPath);
     }
+  }
+
+  _contains(pathList, source) {
+    const isSubPath = (parent, child) => {
+      const parentTokens = parent.split(path.sep).filter((i) => i.length);
+      const childTokens = child.split(path.sep).filter((i) => i.length);
+      return parentTokens.every((t, i) => childTokens[i] === t);
+    };
+
+    return pathList === undefined
+      ? false
+      : pathList.some((p) => isSubPath(p, source));
   }
 
   async abigen(path, argv) {
