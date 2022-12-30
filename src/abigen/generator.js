@@ -18,7 +18,6 @@ module.exports = class Generator {
   }
 
   async generate() {
-    console.log("\nGenerating bindings...");
     const names = await this.artifacts.getAllFullyQualifiedNames();
 
     const filterer = (n) => {
@@ -29,7 +28,9 @@ module.exports = class Generator {
       );
     };
 
-    await this._generate(names.filter(filterer));
+    const filtered = names.filter(filterer);
+    await this._generate(filtered);
+    return filtered;
   }
 
   async clean() {
