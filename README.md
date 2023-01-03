@@ -165,6 +165,6 @@ Note that there are no `node_modules` parent directory for `@openzeppelin` depen
 
 ## Known limitations
 
-- `onlyFiles` and `skipFiles` might not work on Windows because of path separator. It was not tested and depends on Hardhat path formatting.
+- `onlyFiles` and `skipFiles` might not work on Windows because of the path separator. It was not tested and depends on Hardhat path formatting.
 - `--verbose` is not available in CLI because of names clash with Hardhat. [Learn more](https://hardhat.org/hardhat-runner/docs/errors#HH202).
 - `node_modules` must not be present in path, because *HRE* drops it from the source path, although specifying `node_modules` can be implemented.
