@@ -27,7 +27,7 @@ const gobind: ActionType<BindingArgs> = async ({ outdir, deployable, compile }, 
 
   try {
     const contracts = await new Generator(hre).generate();
-    console.log(`\n[GOBIND] Generated bindings for ${contracts.length} contracts`);
+    console.log(`\nGenerated bindings for ${contracts.length} contracts`);
   } catch (e: any) {
     throw new NomicLabsHardhatPluginError(pluginName, e.message);
   }
