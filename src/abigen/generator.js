@@ -16,9 +16,7 @@ module.exports = class Generator {
     this.onlyFiles = hre.config.gobind.onlyFiles.map((p) => path.normalize(p));
     this.skipFiles = hre.config.gobind.skipFiles.map((p) => path.normalize(p));
     this._verboseLog = (msg) =>
-      hre.config.gobind.verbose
-        ? console.log(`[GOBIND] ${msg}`)
-        : this._contains;
+      hre.config.gobind.verbose ? console.log(`[GOBIND] ${msg}`) : msg;
   }
 
   async generate() {
