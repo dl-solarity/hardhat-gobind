@@ -15,8 +15,6 @@ module.exports = class Generator {
     this.deployable = hre.config.gobind.deployable;
     this.onlyFiles = hre.config.gobind.onlyFiles.map((p) => path.normalize(p));
     this.skipFiles = hre.config.gobind.skipFiles.map((p) => path.normalize(p));
-    this._verboseLog = (msg) =>
-      hre.config.gobind.verbose ? console.log(`[GOBIND] ${msg}`) : msg;
   }
 
   async generate() {
@@ -105,6 +103,10 @@ module.exports = class Generator {
     return pathList === undefined
       ? false
       : pathList.some((p) => isSubPath(p, source));
+  }
+
+  _verboseLog(msg) {
+    if (hre.config.gobind.verbose) console.log(`[GOBIND] ${msg}`);
   }
 
   async abigen(path, argv) {
