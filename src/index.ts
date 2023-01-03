@@ -26,14 +26,11 @@ const gobind: ActionType<BindingArgs> = async ({ outdir, deployable, compile }, 
   }
 
   try {
-    await new Generator(hre).generateAll();
+    const contracts = await new Generator(hre).generate();
+    console.log(`\nGenerated bindings for ${contracts.length} contracts`);
   } catch (e: any) {
     throw new NomicLabsHardhatPluginError(pluginName, e.message);
   }
-
-  const artifacts = await hre.artifacts.getAllFullyQualifiedNames();
-
-  console.log(`\nGenerated bindings for ${artifacts.length} contracts`);
 };
 
 task(TASK_GOBIND, "Generate Go bindings for compiled contracts")
