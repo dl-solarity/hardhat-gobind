@@ -29,6 +29,13 @@ module.exports = class Generator {
     };
 
     const filtered = names.filter(filterer);
+
+    this._verboseLog(
+      `${names.length} compiled contracts found, skipping ${
+        names.length - filtered.length
+      } of them\n`
+    );
+
     await this._generate(filtered);
     return filtered;
   }
@@ -48,6 +55,12 @@ module.exports = class Generator {
   }
 
   async _generate(artifactNames) {
+    this._verboseLog(
+      `Generating bindings into ${this.outDir} ${
+        this.deployable ? "with" : "without"
+      } deployment method\n`
+    );
+
     for (const name of artifactNames) {
       const artifact = await this.artifacts.readArtifact(name);
       const contract = artifact.contractName;
@@ -63,6 +76,8 @@ module.exports = class Generator {
       const genPath = `${genDir}/${contract}.${this.lang}`;
 
       const argv = `abigen --abi ${abiPath} --pkg ${packageName} --type ${contract} --lang ${this.lang} --out ${genPath}`;
+
+      this._verboseLog(`${contract}: ${source}`);
 
       await fsp.mkdir(genDir, { recursive: true });
       await fsp.writeFile(abiPath, JSON.stringify(artifact.abi));
@@ -92,6 +107,10 @@ module.exports = class Generator {
     return pathList === undefined
       ? false
       : pathList.some((p) => isSubPath(p, source));
+  }
+
+  _verboseLog(msg) {
+    if (hre.config.gobind.verbose) console.log(msg);
   }
 
   async abigen(path, argv) {

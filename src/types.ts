@@ -2,6 +2,7 @@ export interface DlGoBindConfig {
   outdir: string;
   deployable: boolean;
   runOnCompile: boolean;
+  verbose: boolean;
   onlyFiles: string[];
   skipFiles: string[];
 }
