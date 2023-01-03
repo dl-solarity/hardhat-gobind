@@ -6,7 +6,7 @@
 
 ## What
 
-This plugin helps you generate `.go` files with bindings to call smart contracts from Go code. To generate them, the plugin uses `abigen` in a `wasm` binary form, that is built from [go-ethereum/cmd/abigen](https://github.com/ethereum/go-ethereum/tree/master/cmd/abigen) Go module.
+This plugin helps you generate `.go` files with bindings to call smart contracts from Go code. To produce them, the plugin uses `abigen` in a `wasm` binary form that is built from [go-ethereum/cmd/abigen](https://github.com/ethereum/go-ethereum/tree/master/cmd/abigen) Go module.
 
 ## Installation
 
@@ -14,7 +14,7 @@ This plugin helps you generate `.go` files with bindings to call smart contracts
 npm install --save-dev @dlsl/hardhat-gobind
 ```
 
-And add the following statement to your `hardhat.config.js`:
+Add the following statement to your `hardhat.config.js`:
 
 ```js
 require("@dlsl/hardhat-gobind")
@@ -43,7 +43,8 @@ This plugin does not extend the environment.
 
 ## Usage
 
-The plugin works out of the box: `npx hardhat gobind` will compile and generate bindings for all contracts into the default folder.
+The plugin works out of the box: `npx hardhat gobind` will compile and generate bindings for all the contracts used in the project into the default folder.
+
 To generate the most recent bindings, clean old artifacts with `npx hardhat clean` beforehand.
 
 ### Configuration
@@ -70,25 +71,25 @@ module.exports = {
 - `onlyFiles`: If specified, bindings will be generated **only for matching** sources, other will be ignored
 - `skipFiles`: Bindings will not be generated for **any matching** sources, also if those match `onlyFiles`
 
-Some of the parameters are available in CLI, so they can override the ones defined in your *hardhat config* (e.g. `--deployable` will generate deploy method regardless of `config.gobind.deployable` value). Run `npx hardhat help gobind` to get available options.
+Some of the parameters are only available in CLI and they override the ones defined in your *hardhat config* (e.g. `--deployable` will generate deploy method regardless of `config.gobind.deployable` value). Run `npx hardhat help gobind` to get available options.
 
 ### Including/excluding files
 
 - Path stands for relative path from project root to either `.sol` file or directory.
-- If path is a file, only a single file can match it.
 - If path is a directory, all its files and sub-directories are considered matching.
-- If source is a node module, `node_modules` must not be present in path.
+- If source is a node module, `node_modules` must not be present in the path.
 
 ## How it works
 
-The plugin runs `compile` task (if `--no-compile` is not given), gets the artifacts from *Hardhat Runtime Environment* (HRE), filters them according to `onlyFiles` and `skipFiles`, and performs the following actions:
-1. Write contract's ABI (and bytecode, if necessary) into a temporary file `ContractName.abi` (and `ContractName.bin` with bytecode).
-2. Derive destination folder from the original file location: if the file is in `./contracts`, the folder will be `./your_outdir/contracts`.
-3. Derive Go package name from the parent folder: for `./your_outdir/nested/My_Contracts` it will be `mycontracts`.
-4. Call `abigen` via WebAssembly: `abigen --abi /path/to/file.abi --pkg packagename --type ContractName --lang go --out /path/to/your_project/your_outdir` (and `--bin /path/to/file.bin`, if necessary).
-5. Remove temporary files.
+The plugin runs `compile` task (if `--noCompile` is not given), gets the artifacts from *Hardhat Runtime Environment* (HRE), filters them according to `onlyFiles` and `skipFiles`, and performs the following actions:
 
-Bindings are generated for contracts, not files. Having 3 contracts in a single file, you get 3 `.go` files named after contracts. If you skip this file, all 3 contracts will be ignored as well.
+1. Writes contract's ABI (and bytecode, if necessary) into a temporary file `ContractName.abi` (and `ContractName.bin` with bytecode).
+2. Derives destination folder from the original file location: if the file is in `./contracts`, the folder will be `./your_outdir/contracts`.
+3. Derives Go package name from the parent folder: for `./your_outdir/nested/My_Contracts` it will be `mycontracts`.
+4. Calls `abigen` via WebAssembly: `abigen --abi /path/to/file.abi --pkg packagename --type ContractName --lang go --out /path/to/your_project/your_outdir` (and `--bin /path/to/file.bin`, if necessary).
+5. Removes temporary files.
+
+Bindings are generated for contracts, not files. Having 3 contracts in a single file, you get 3 `.go` files named after contracts. If you skip the file, all 3 contracts are ignored.
 
 Consider we have Hardhat project with the following structure (excluding some files for brevity):
 
@@ -109,8 +110,7 @@ Consider we have Hardhat project with the following structure (excluding some fi
                 └── Ownable2Step.sol
 ```
 
-`npx hardhat gobind` with the default configuration will create the following folder.
-Note there are no `node_modules` parent directory for `@openzeppelin` dependency.
+`npx hardhat gobind` with the default configuration will create the following directory structure. Note there are no `node_modules` parent directory for `@openzeppelin` dependency.
 
 ```
 generated-types
@@ -129,29 +129,12 @@ generated-types
 ```
 
 In most cases, you want bindings only for your `contracts/` directory, excluding `contracts/interfaces` and all the dependencies from `node_modules`.
+
 It is achieved by adding the following into your *hardhat config*:
 
 ```js
-onlyFiles: ["contracts/Example.sol", "contracts/Sample.sol"],
-```
-or
-```js
 onlyFiles: ["contracts"],
-skipFiles: ["contracts/interfaces"],
-```
-or
-```js
-skipFiles: ["contracts/interfaces", "@openzeppelin"],
-```
-
-`npx hardhat gobind` will execute faster because of less bindings to generate:
-
-```
-generated-types
-└── bindings
-    └── contracts
-        ├── Example.go
-        └── Sample.go
+skipFiles: ["contracts/interfaces", "@openzeppelin", "@dlsl"],
 ```
 
 ## Known limitations
