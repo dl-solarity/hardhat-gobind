@@ -45,7 +45,7 @@ This plugin does not extend the environment.
 
 You may use the plugin without custom configuration. After installation simply run `npx hardhat gobind` to generate bindings into the default folder (see the default config below).
 
-**Note.** The plugin generates bindings using existing compilation artifacts, so you may have a message: *Generated bindings for 0 contracts*. To compile your contracts before generation, set `runOnCompile: true` and run `compile` task, or run any of the following:
+**Notice.** The plugin generates bindings using existing compilation artifacts. It might cause various issues, such as *'Generated bindings for 0 contracts'* message, runtime errors, bindings for old/deleted contracts etc. You may need to run `npx hardhat clean` and then compile your contracts before generation with one of the following commands:
 ```bash
 npx hardhat compile --generate-bindings
 npx hardhat gobind --compile
