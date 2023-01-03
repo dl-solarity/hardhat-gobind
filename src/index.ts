@@ -12,16 +12,16 @@ import { ActionType } from "hardhat/types";
 interface BindingArgs {
   outdir?: string;
   deployable: boolean;
-  compile: boolean;
+  noCompile: boolean;
 }
 
 extendConfig(getDefaultGoBindConfig);
 
-const gobind: ActionType<BindingArgs> = async ({ outdir, deployable, compile }, hre) => {
+const gobind: ActionType<BindingArgs> = async ({ outdir, deployable, noCompile }, hre) => {
   hre.config.gobind.outdir = outdir === undefined ? hre.config.gobind.outdir : outdir;
   hre.config.gobind.deployable = !deployable ? hre.config.gobind.deployable : deployable;
 
-  if (compile) {
+  if (!noCompile) {
     await hre.run(TASK_COMPILE, { generateBind: false });
   }
 
@@ -41,7 +41,7 @@ task(TASK_GOBIND, "Generate Go bindings for compiled contracts")
     types.string
   )
   .addFlag("deployable", "Generate bindings with the bytecode in order to deploy the contracts within Go")
-  .addFlag("compile", "Compile smart contracts before the generation")
+  .addFlag("noCompile", "Do not compile smart contracts before the generation")
   .setAction(gobind);
 
 task(TASK_COMPILE)
@@ -50,7 +50,7 @@ task(TASK_COMPILE)
     await runSuper();
 
     if (config.gobind.runOnCompile || generateBindings) {
-      await run(TASK_GOBIND, { compile: false });
+      await run(TASK_GOBIND, { noCompile: true });
     }
   });
 
