@@ -43,17 +43,12 @@ This plugin does not extend the environment.
 
 ## Usage
 
-You may use the plugin without custom configuration. After installation simply run `npx hardhat gobind` to generate bindings into the default folder (see the default config below).
-
-**Notice.** The plugin generates bindings using existing compilation artifacts. It might cause various issues, such as *'Generated bindings for 0 contracts'* message, runtime errors, bindings for old/deleted contracts etc. You may need to run `npx hardhat clean` and then compile your contracts before generation with one of the following commands:
-```bash
-npx hardhat compile --generate-bindings
-npx hardhat gobind --compile
-```
+The plugin works out of the box: `npx hardhat gobind` will compile and generate bindings for all contracts into the default folder.
+To generate the most recent bindings, clean old artifacts with `npx hardhat clean` beforehand.
 
 ### Configuration
 
-The default configuration looks as follows. You may customize all these fields in your *hardhat config* file.
+The default configuration looks as follows. You may customize all fields in your *hardhat config* file.
 
 ```js
 module.exports = {
@@ -71,7 +66,7 @@ module.exports = {
 - `outdir` : The directory where the generated bindings will be placed
 - `deployable` : Generates the bindings with the bytecode (makes them deployable within Go)
 - `runOnCompile` : Whether to run bindings generation on compilation
-- `verbose`: Detailed logging on generation (e.g. count of included and skipped contracts, source paths and contract name for each binding)
+- `verbose`: Detailed logging on generation (e.g. count of included and skipped contracts, source paths, names)
 - `onlyFiles`: If specified, bindings will be generated **only for matching** sources, other will be ignored
 - `skipFiles`: Bindings will not be generated for **any matching** sources, also if those match `onlyFiles`
 
@@ -79,14 +74,24 @@ Some of the parameters are available in CLI, so they can override the ones defin
 
 ### Including/excluding files
 
-- Path stands for relative path from project root to either `.sol` file or directory. Example: `Sample.sol` will be considered as `/your/project/root/Sample.sol`.
-- If path is a file, only a single file can match it. Example: `contracts/sample/Sample.sol`, `sample/Sample.sol` and `Sample.sol` are considered different paths.
+- Path stands for relative path from project root to either `.sol` file or directory.
+- If path is a file, only a single file can match it.
 - If path is a directory, all its files and sub-directories are considered matching.
-- If source is a node module, `node_modules` must not be present in path. Example: `sample/Contract.sol` will match `/your/project/root/sample/Contract.sol`, and `node_modules/sample/Contract.sol` will not.
+- If source is a node module, `node_modules` must not be present in path.
 
-#### Tips and tricks
+## How it works
+
+The plugin runs `compile` task (if `--no-compile` is not given), gets the artifacts from *Hardhat Runtime Environment* (HRE), filters them according to `onlyFiles` and `skipFiles`, and performs the following actions:
+1. Write contract's ABI (and bytecode, if necessary) into a temporary file `ContractName.abi` (and `ContractName.bin` with bytecode).
+2. Derive destination folder from the original file location: if the file is in `./contracts`, the folder will be `./your_outdir/contracts`.
+3. Derive Go package name from the parent folder: for `./your_outdir/nested/My_Contracts` it will be `mycontracts`.
+4. Call `abigen` via WebAssembly: `abigen --abi /path/to/file.abi --pkg packagename --type ContractName --lang go --out /path/to/your_project/your_outdir` (and `--bin /path/to/file.bin`, if necessary).
+5. Remove temporary files.
+
+Bindings are generated for contracts, not files. Having 3 contracts in a single file, you get 3 `.go` files named after contracts. If you skip this file, all 3 contracts will be ignored as well.
 
 Consider we have Hardhat project with the following structure (excluding some files for brevity):
+
 ```
 .
 ├── contracts
@@ -104,47 +109,9 @@ Consider we have Hardhat project with the following structure (excluding some fi
                 └── Ownable2Step.sol
 ```
 
-1. Generate bindings only for our contracts (this is basically what you want to do)
-```js
-onlyFiles: ["contracts/Example.sol", "contracts/Sample.sol"],
-```
-or
-```js
-onlyFiles: ["contracts"],
-skipFiles: ["contracts/interfaces"],
-```
-or
-```js
-skipFiles: ["contracts/interfaces", "@openzeppelin"],
-```
+`npx hardhat gobind` with the default configuration will create the following folder.
+Note there are no `node_modules` parent directory for `@openzeppelin` dependency.
 
-2. Generate only for specific contracts (Sample and Ownable)
-```js
-onlyFiles: ["contracts/Sample.sol", "@openzeppelin/contracts/access/Ownable.sol"],
-```
-
-3. Skip specific contracts (Example and its interface) and dependencies
-```js
-onlyFiles: ["contracts"],
-skipFiles: ["contracts/Example.sol", "contracts/interfaces/IExample.sol"],
-```
-or
-```js
-skipFiles: ["contracts/Example.sol", "contracts/interfaces/IExample.sol", "@openzeppelin"],
-```
-
-## How it works
-
-The plugin gets artifacts from *Hardhat Runtime Environment* (HRE), filters them according to `onlyFiles` and `skipFiles`, and performs the following actions:
-1. Write contract's ABI (and bytecode, if necessary) into a temporary file `ContractName.abi` (and `ContractName.bin` with bytecode).
-2. Derive destination folder from the original file location: if the file is in `./contracts`, the folder will be `./your_outdir/contracts`.
-3. Derive Go package name from the parent folder: for `./your_outdir/nested/My_Contracts` it will be `mycontracts`.
-4. Call `abigen` via WebAssembly: `abigen --abi /path/to/file.abi --pkg packagename --type ContractName --lang go --out /path/to/your_project/your_outdir` (and `--bin /path/to/file.bin`, if necessary).
-5. Remove temporary files.
-
-Bindings are generated for contracts, not files. Having 3 contracts in a single file, you get 3 `.go` files named after contracts. If you skip this file, all 3 contracts will be ignored as well.
-
-Having the project structure from [Tips and tricks](#tips-and-tricks) and artifacts, after running `npx hardhat gobind` with the default config we'll have the following generated files:
 ```
 generated-types
 └── bindings
@@ -161,10 +128,33 @@ generated-types
             └── ISample.go
 ```
 
-Note that there are no `node_modules` parent directory for `@openzeppelin` dependency.
+In most cases, you want bindings only for your `contracts/` directory, excluding `contracts/interfaces` and all the dependencies from `node_modules`.
+It is achieved by adding the following into your *hardhat config*:
+
+```js
+onlyFiles: ["contracts/Example.sol", "contracts/Sample.sol"],
+```
+or
+```js
+onlyFiles: ["contracts"],
+skipFiles: ["contracts/interfaces"],
+```
+or
+```js
+skipFiles: ["contracts/interfaces", "@openzeppelin"],
+```
+
+`npx hardhat gobind` will execute faster because of less bindings to generate:
+
+```
+generated-types
+└── bindings
+    └── contracts
+        ├── Example.go
+        └── Sample.go
+```
 
 ## Known limitations
 
-- `onlyFiles` and `skipFiles` might not work on Windows because of the path separator. It was not tested and depends on Hardhat path formatting.
 - `--verbose` is not available in CLI because of names clash with Hardhat. [Learn more](https://hardhat.org/hardhat-runner/docs/errors#HH202).
-- `node_modules` must not be present in path, because *HRE* drops it from the source path, although specifying `node_modules` can be implemented.
+- `node_modules` must not be present in the path.
