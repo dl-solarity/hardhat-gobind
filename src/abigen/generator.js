@@ -110,7 +110,9 @@ module.exports = class Generator {
   }
 
   _verboseLog(msg) {
-    if (hre.config.gobind.verbose) console.log(msg);
+    if (hre.config.gobind.verbose) {
+      console.log(msg);
+    }
   }
 
   async abigen(path, argv) {

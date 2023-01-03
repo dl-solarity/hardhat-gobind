@@ -18,10 +18,13 @@ export const getDefaultGoBindConfig: ConfigExtender = (resolvedConfig, config) =
     return;
   }
 
-  if (!areRelativePaths(config.gobind.onlyFiles))
+  if (!areRelativePaths(config.gobind.onlyFiles)) {
     throw new NomicLabsHardhatPluginError(pluginName, "config.gobind.onlyFiles must only include relative paths");
-  if (!areRelativePaths(config.gobind.skipFiles))
+  }
+
+  if (!areRelativePaths(config.gobind.skipFiles)) {
     throw new NomicLabsHardhatPluginError(pluginName, "config.gobind.skipFiles must only include relative paths");
+  }
 
   const { cloneDeep } = require("lodash");
   const customConfig = cloneDeep(config.gobind);
