@@ -13,11 +13,12 @@ interface BindingArgs {
   outdir?: string;
   deployable: boolean;
   noCompile: boolean;
+  _abigenPath?: string;
 }
 
 extendConfig(getDefaultGoBindConfig);
 
-const gobind: ActionType<BindingArgs> = async ({ outdir, deployable, noCompile }, hre) => {
+const gobind: ActionType<BindingArgs> = async ({ outdir, deployable, noCompile, _abigenPath }, hre) => {
   hre.config.gobind.outdir = outdir === undefined ? hre.config.gobind.outdir : outdir;
   hre.config.gobind.deployable = !deployable ? hre.config.gobind.deployable : deployable;
 
@@ -26,7 +27,7 @@ const gobind: ActionType<BindingArgs> = async ({ outdir, deployable, noCompile }
   }
 
   try {
-    const contracts = await new Generator(hre).generate();
+    const contracts = await new Generator(hre, _abigenPath).generate();
     console.log(`\nGenerated bindings for ${contracts.length} contracts`);
   } catch (e: any) {
     throw new NomicLabsHardhatPluginError(pluginName, e.message);
@@ -46,13 +47,19 @@ task(TASK_GOBIND, "Generate Go bindings for compiled contracts")
 
 task(TASK_COMPILE)
   .addFlag("generateBindings", "Generate bindings after compilation")
-  .setAction(async ({ generateBindings }: { generateBindings: boolean }, { config, run }, runSuper) => {
-    await runSuper();
+  .setAction(
+    async (
+      { generateBindings, _abigenPath }: { generateBindings: boolean; _abigenPath?: string },
+      { config, run },
+      runSuper
+    ) => {
+      await runSuper();
 
-    if (config.gobind.runOnCompile || generateBindings) {
-      await run(TASK_GOBIND, { noCompile: true });
+      if (config.gobind.runOnCompile || generateBindings) {
+        await run(TASK_GOBIND, { noCompile: true, _abigenPath: _abigenPath });
+      }
     }
-  });
+  );
 
 task(TASK_CLEAN, "Clears the cache and deletes all artifacts").setAction(
   async ({ global }: { global: boolean }, hre, runSuper) => {
