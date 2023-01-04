@@ -20,34 +20,29 @@ describe("GoBind x Hardhat", function () {
   };
 
   it("does not generate bindings with --no-compile and no artifacts", async function () {
-    const outdir = path.resolve(this.env.config.gobind.outdir);
-
     await this.env.run(TASK_GOBIND, { noCompile: true, ...abigenPath });
-    assertNotExists(outdir);
+    assertNotExists(this.outdir);
   });
 
   it("compiles and generates bindings", async function () {
-    const outdir = path.resolve(this.env.config.gobind.outdir);
-    assertNotExists(outdir);
+    assertNotExists(this.outdir);
 
     await this.env.run(TASK_GOBIND, abigenPath);
-    assertContractsGenerated(outdir);
+    assertContractsGenerated(this.outdir);
   });
 
   it("cleans up generated bindings", async function () {
-    const outdir = path.resolve(this.env.config.gobind.outdir);
-    assertExists(outdir);
+    assertExists(this.outdir);
 
     await this.env.run(TASK_CLEAN);
-    assertNotExists(outdir);
+    assertNotExists(this.outdir);
   });
 
   it("generates bindings on compilation with --generate-bindings", async function () {
-    const outdir = path.resolve(this.env.config.gobind.outdir);
-    assertNotExists(outdir);
+    assertNotExists(this.outdir);
 
     await this.env.run(TASK_COMPILE, { generateBindings: true, ...abigenPath });
-    assertContractsGenerated(outdir);
+    assertContractsGenerated(this.outdir);
 
     await this.env.run(TASK_CLEAN);
   });

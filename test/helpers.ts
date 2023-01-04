@@ -15,6 +15,7 @@ export function useEnvironment(fixtureProjectName: string, networkName = "hardha
     process.env.HARDHAT_NETWORK = networkName;
 
     this.env = require("hardhat");
+    this.outdir = this.env.config.gobind.outdir;
   });
 
   afterEach("Resetting hardhat", function () {
