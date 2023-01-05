@@ -1,7 +1,6 @@
 import { assert } from "chai";
 import { existsSync } from "fs";
 import { TASK_CLEAN, TASK_COMPILE } from "hardhat/builtin-tasks/task-names";
-import path from "path";
 
 import { TASK_GOBIND } from "../src/constants";
 import { useEnvironment } from "./helpers";
@@ -18,6 +17,10 @@ describe("GoBind x Hardhat", function () {
     assertExists(`${outdir}/contracts`);
     assertExists(`${outdir}/contracts/Lock.go`);
   };
+
+  this.afterAll("Performing cleanup of all the redundant files", async function () {
+    await this.env.run(TASK_CLEAN);
+  });
 
   it("does not generate bindings with --no-compile and no artifacts", async function () {
     await this.env.run(TASK_GOBIND, { noCompile: true, ...abigenPath });
@@ -43,7 +46,5 @@ describe("GoBind x Hardhat", function () {
 
     await this.env.run(TASK_COMPILE, { generateBindings: true, ...abigenPath });
     assertContractsGenerated(this.outdir);
-
-    await this.env.run(TASK_CLEAN);
   });
 });
