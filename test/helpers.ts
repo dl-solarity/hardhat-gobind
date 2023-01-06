@@ -24,8 +24,16 @@ export function useEnvironment(fixtureProjectName: string, networkName = "hardha
   });
 
   after("Performing cleanup of all the redundant files", async function () {
-    await this.env.run(TASK_CLEAN); // this is faster
-    // rm(this.outdir, { recursive: true, force: true });
+    await this.env.run(TASK_CLEAN);
+  });
+}
+
+export function cleanAfterEach() {
+  // Manual removing of generated files should be faster than full cleanup because of the frequent re-compilations
+  // Another way is to use the different outdir for each case
+  // Surprisingly, full cleanup after each case is faster than manual rm of outir
+  afterEach(async function () {
+    await this.env.run(TASK_CLEAN);
     // rmSync(this.outdir, { recursive: true, force: true });
   });
 }

@@ -1,9 +1,10 @@
 import { assert } from "chai";
-import { existsSync, rmSync } from "fs";
+import { existsSync } from "fs";
+import { resolve } from "path";
 import { TASK_CLEAN, TASK_COMPILE } from "hardhat/builtin-tasks/task-names";
 
 import { TASK_GOBIND } from "../src/constants";
-import { useEnvironment } from "./helpers";
+import { useEnvironment, cleanAfterEach } from "./helpers";
 
 describe("GoBind x Hardhat integration", function () {
   const abigenPath = { _abigenPath: "../../../bin/abigen.wasm" };
@@ -48,17 +49,10 @@ describe("GoBind x Hardhat integration", function () {
 
   describe("onlyFiles, skipFiles parameters", function () {
     useEnvironment("hardhat-project-extended");
+    cleanAfterEach();
 
     this.beforeEach(function () {
       assertNotExists(this.outdir);
-    });
-
-    // Manual removing of generated files should be faster than full cleanup because of the frequent re-compilations
-    // Another way is to use the different outdir for each case
-    // Surprisingly, full cleanup after each case is faster than manual rm of outir
-    this.afterEach(async function () {
-      await this.env.run(TASK_CLEAN);
-      // rmSync(this.outdir, { recursive: true, force: true });
     });
 
     // directories are absent in paths for a simple usage of assertNotGenerated
@@ -158,6 +152,34 @@ describe("GoBind x Hardhat integration", function () {
       await this.env.run(TASK_GOBIND, abigenPath);
 
       assertNotGenerated(this.outdir, allPaths);
+    });
+  });
+
+  describe("Misc config fields and flag tests", function () {
+    useEnvironment("hardhat-project-defined-config");
+    cleanAfterEach();
+
+    it("generates bindings into the custom outdir", async function () {
+      const outdir = resolve("go");
+      assertNotExists(outdir);
+
+      await this.env.run(TASK_GOBIND, abigenPath);
+      assertContractsGenerated(outdir);
+    });
+
+    it("overrides output directory with --outdir", async function () {
+      const relOutdir = "generated-types/flag-outdir";
+      const outdir = resolve(relOutdir);
+      assertNotExists(outdir);
+
+      await this.env.run(TASK_GOBIND, { outdir: relOutdir, ...abigenPath });
+      assertContractsGenerated(outdir);
+    });
+
+    it("automatically generates bindings with runOnCompile", async function () {
+      assertNotExists(this.outdir);
+      await this.env.run(TASK_COMPILE, abigenPath);
+      assertContractsGenerated(this.outdir);
     });
   });
 });

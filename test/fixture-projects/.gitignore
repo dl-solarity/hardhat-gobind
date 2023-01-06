@@ -1,4 +1,5 @@
 /*/artifacts
 /*/cache
 /*/generated-types
+/*/go
 !/hardhat-project-extended/node_modules
