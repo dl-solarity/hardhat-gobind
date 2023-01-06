@@ -23,7 +23,7 @@ const gobind: ActionType<BindingArgs> = async ({ outdir, deployable, noCompile, 
   hre.config.gobind.deployable = !deployable ? hre.config.gobind.deployable : deployable;
 
   if (!noCompile) {
-    await hre.run(TASK_COMPILE, { generateBind: false });
+    await hre.run(TASK_COMPILE, { generateBind: false, _abigenPath: _abigenPath });
   }
 
   try {
