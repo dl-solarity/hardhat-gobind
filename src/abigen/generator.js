@@ -5,10 +5,7 @@ const fs = require("fs");
 const fsp = require("fs/promises");
 
 module.exports = class Generator {
-  constructor(
-    hre,
-    abigenPath = "./node_modules/@dlsl/hardhat-gobind/bin/abigen.wasm"
-  ) {
+  constructor(hre, abigenPath = "./node_modules/@dlsl/hardhat-gobind/bin/abigen.wasm") {
     this.abigenPath = path.resolve(abigenPath);
     this.lang = "go";
     this.artifacts = hre.artifacts;
@@ -24,18 +21,13 @@ module.exports = class Generator {
     const filterer = (n) => {
       const src = this.artifacts.readArtifactSync(n).sourceName;
       return (
-        (this.onlyFiles.length == 0 || this._contains(this.onlyFiles, src)) &&
-        !this._contains(this.skipFiles, src)
+        (this.onlyFiles.length == 0 || this._contains(this.onlyFiles, src)) && !this._contains(this.skipFiles, src)
       );
     };
 
     const filtered = names.filter(filterer);
 
-    this._verboseLog(
-      `${names.length} compiled contracts found, skipping ${
-        names.length - filtered.length
-      } of them\n`
-    );
+    this._verboseLog(`${names.length} compiled contracts found, skipping ${names.length - filtered.length} of them\n`);
 
     await this._generate(filtered);
     return filtered;
@@ -57,9 +49,7 @@ module.exports = class Generator {
 
   async _generate(artifactNames) {
     this._verboseLog(
-      `Generating bindings into ${this.outDir} ${
-        this.deployable ? "with" : "without"
-      } deployment method\n`
+      `Generating bindings into ${this.outDir} ${this.deployable ? "with" : "without"} deployment method\n`
     );
 
     for (const name of artifactNames) {
@@ -69,11 +59,7 @@ module.exports = class Generator {
 
       const abiPath = `${this.outDir}/${contract}.abi`;
       const genDir = `${this.outDir}/${path.dirname(source)}`;
-      const packageName = path
-        .basename(path.dirname(source))
-        .replaceAll("-", "")
-        .replaceAll("_", "")
-        .toLowerCase();
+      const packageName = path.basename(path.dirname(source)).replaceAll("-", "").replaceAll("_", "").toLowerCase();
       const genPath = `${genDir}/${contract}.${this.lang}`;
 
       const argv = `abigen --abi ${abiPath} --pkg ${packageName} --type ${contract} --lang ${this.lang} --out ${genPath}`;
@@ -105,9 +91,7 @@ module.exports = class Generator {
       return parentTokens.every((t, i) => childTokens[i] === t);
     };
 
-    return pathList === undefined
-      ? false
-      : pathList.some((p) => isSubPath(p, source));
+    return pathList === undefined ? false : pathList.some((p) => isSubPath(p, source));
   }
 
   _verboseLog(msg) {
@@ -123,10 +107,7 @@ module.exports = class Generator {
     go.env = Object.assign({ TMPDIR: require("os").tmpdir() }, process.env);
 
     try {
-      const abigenObj = await WebAssembly.instantiate(
-        await fsp.readFile(path),
-        go.importObject
-      );
+      const abigenObj = await WebAssembly.instantiate(await fsp.readFile(path), go.importObject);
 
       await go.run(abigenObj.instance);
       go._pendingEvent = { id: 0 };
