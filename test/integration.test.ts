@@ -55,7 +55,6 @@ describe("GoBind x Hardhat integration", function () {
       assertNotExists(this.outdir);
     });
 
-    // directories are absent in paths for a simple usage of assertNotGenerated
     const contractPaths = ["Mock1.go", "Mock2.go"].map((p) => "contracts/" + p);
     const interfacePaths = ["IMock1.go", "IMock2.go"].map((p) => "contracts/interfaces/" + p);
     const dependecyPaths = ["access/Ownable.go", "utils/Context.go"].map((p) => "@openzeppelin/contracts/" + p);

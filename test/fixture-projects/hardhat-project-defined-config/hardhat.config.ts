@@ -1,4 +1,4 @@
-import "../../../src/index"; // plugin self-load
+import "../../../src/index";
 import { HardhatUserConfig } from "hardhat/types";
 
 const config: HardhatUserConfig = {
