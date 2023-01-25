@@ -81,7 +81,7 @@ Some of the parameters are only available in CLI and they override the ones defi
 
 ## How it works
 
-The plugin runs `compile` task (if `--noCompile` is not given), gets the artifacts from *Hardhat Runtime Environment* (HRE), filters them according to `onlyFiles` and `skipFiles`, and performs the following actions:
+The plugin runs `compile` task (if `--no-compile` is not given), gets the artifacts from *Hardhat Runtime Environment* (HRE), filters them according to `onlyFiles` and `skipFiles`, and performs the following actions:
 
 1. Writes contract's ABI (and bytecode, if necessary) into a temporary file `ContractName.abi` (and `ContractName.bin` with bytecode).
 2. Derives destination folder from the original file location: if the file is in `./contracts`, the folder will be `./your_outdir/contracts`.

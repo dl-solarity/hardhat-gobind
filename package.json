@@ -1,6 +1,6 @@
 {
   "name": "@dlsl/hardhat-gobind",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Generation of smart contract bindings for Golang",
   "scripts": {
     "install": "npx husky install",
@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/distributedlab-solidity-library/hardhat-gobind.git"
+    "url": "git+https://github.com/dl-solidity-library/hardhat-gobind.git"
   },
   "keywords": [
     "ethereum",
@@ -27,9 +27,9 @@
   "author": "Distributed Lab",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/distributedlab-solidity-library/hardhat-gobind/issues"
+    "url": "https://github.com/dl-solidity-library/hardhat-gobind/issues"
   },
-  "homepage": "https://github.com/distributedlab-solidity-library/hardhat-gobind#readme",
+  "homepage": "https://github.com/dl-solidity-library/hardhat-gobind#readme",
   "peerDependencies": {
     "hardhat": "^2.10.0"
   },
