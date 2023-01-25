@@ -14,10 +14,12 @@ globalThis.performance = {
   },
 };
 
-globalThis.crypto = {
-  getRandomValues(b) {
-    crypto.randomFillSync(b);
+Object.defineProperty(globalThis, "crypto", {
+  value: {
+    getRandomValues(b) {
+      crypto.randomFillSync(b);
+    },
   },
-};
+});
 
 require("./wasm_exec");
