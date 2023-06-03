@@ -11,8 +11,8 @@ module.exports = class Generator {
     this.artifacts = hre.artifacts;
     this.outDir = path.resolve(hre.config.gobind.outdir);
     this.deployable = hre.config.gobind.deployable;
-    this.onlyFiles = hre.config.gobind.onlyFiles.map((p) => path.normalize(p));
-    this.skipFiles = hre.config.gobind.skipFiles.map((p) => path.normalize(p));
+    this.onlyFiles = hre.config.gobind.onlyFiles.map((p) => this._toUnixPath(path.normalize(p)));
+    this.skipFiles = hre.config.gobind.skipFiles.map((p) => this._toUnixPath(path.normalize(p)));
   }
 
   async generate() {
@@ -84,10 +84,14 @@ module.exports = class Generator {
     }
   }
 
+  _toUnixPath(userPath) {
+    return userPath.split(path.sep).join(path.posix.sep);
+  }
+
   _contains(pathList, source) {
     const isSubPath = (parent, child) => {
-      const parentTokens = parent.split(path.sep).filter((i) => i.length);
-      const childTokens = child.split(path.sep).filter((i) => i.length);
+      const parentTokens = parent.split(path.posix.sep).filter((i) => i.length);
+      const childTokens = child.split(path.posix.sep).filter((i) => i.length);
       return parentTokens.every((t, i) => childTokens[i] === t);
     };
 
