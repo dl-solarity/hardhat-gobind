@@ -1,6 +1,6 @@
 {
   "name": "@dlsl/hardhat-gobind",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Generation of smart contract bindings for Golang",
   "scripts": {
     "install": "npx husky install",
