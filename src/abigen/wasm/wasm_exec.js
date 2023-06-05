@@ -598,7 +598,6 @@
       // Keep in sync with cmd/link/internal/ld/data.go:wasmMinDataAddr.
       const wasmMinDataAddr = 4096 + 8192;
       if (offset >= wasmMinDataAddr) {
-        console.log("offset", offset);
         throw new Error("total length of command line and environment variables exceeds limit");
       }
 
