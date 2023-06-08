@@ -580,6 +580,9 @@
 
       const keys = Object.keys(this.env).sort();
       keys.forEach((key) => {
+        if (key.startsWith("GITHUB_")) {
+          return;
+        }
         argvPtrs.push(strPtr(`${key}=${this.env[key]}`));
       });
       argvPtrs.push(0);
