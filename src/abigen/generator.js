@@ -5,7 +5,7 @@ const fs = require("fs");
 const fsp = require("fs/promises");
 
 module.exports = class Generator {
-  constructor(hre, abigenPath = "./node_modules/@dlsl/hardhat-gobind/bin/abigen.wasm") {
+  constructor(hre, abigenPath = "./node_modules/@solarity/hardhat-gobind/bin/abigen.wasm") {
     this.abigenPath = path.resolve(abigenPath);
     this.lang = "go";
     this.artifacts = hre.artifacts;

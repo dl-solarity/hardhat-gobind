@@ -1,5 +1,5 @@
 {
-  "name": "@dlsl/hardhat-gobind",
+  "name": "@solarity/hardhat-gobind",
   "version": "1.0.3",
   "description": "Generation of smart contract bindings for Golang",
   "main": "dist/src/index.js",
@@ -13,7 +13,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dl-solidity-library/hardhat-gobind.git"
+    "url": "git+https://github.com/dl-solarity/hardhat-gobind.git"
   },
   "keywords": [
     "ethereum",
@@ -22,14 +22,15 @@
     "go-bindings",
     "hardhat",
     "hardhat-plugin",
-    "distributedlab"
+    "distributedlab",
+    "solarity"
   ],
   "author": "Distributed Lab",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/dl-solidity-library/hardhat-gobind/issues"
+    "url": "https://github.com/dl-solarity/hardhat-gobind/issues"
   },
-  "homepage": "https://github.com/dl-solidity-library/hardhat-gobind#readme",
+  "homepage": "https://github.com/dl-solarity/hardhat-gobind#readme",
   "peerDependencies": {
     "hardhat": "^2.10.0"
   },

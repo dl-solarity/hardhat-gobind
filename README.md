@@ -1,4 +1,4 @@
-[![npm](https://img.shields.io/npm/v/@dlsl/hardhat-gobind.svg)](https://www.npmjs.com/package/@dlsl/hardhat-gobind) [![hardhat](https://hardhat.org/buidler-plugin-badge.svg?1)](https://hardhat.org)
+[![npm](https://img.shields.io/npm/v/@solarity/hardhat-gobind.svg)](https://www.npmjs.com/package/@solarity/hardhat-gobind) [![hardhat](https://hardhat.org/buidler-plugin-badge.svg?1)](https://hardhat.org)
 
 # Hardhat GoBind
 
@@ -11,19 +11,19 @@ This plugin helps you generate `.go` files with bindings to call smart contracts
 ## Installation
 
 ```bash
-npm install --save-dev @dlsl/hardhat-gobind
+npm install --save-dev @solarity/hardhat-gobind
 ```
 
 Add the following statement to your `hardhat.config.js`:
 
 ```js
-require("@dlsl/hardhat-gobind")
+require("@solarity/hardhat-gobind")
 ```
 
 Or, if you are using TypeScript, add this to your `hardhat.config.ts`:
 
 ```ts
-import "@dlsl/hardhat-gobind"
+import "@solarity/hardhat-gobind"
 ```
 
 ## Tasks
@@ -134,7 +134,7 @@ It is achieved by adding the following into your *hardhat config*:
 
 ```js
 onlyFiles: ["contracts"],
-skipFiles: ["contracts/interfaces", "@openzeppelin", "@dlsl"],
+skipFiles: ["contracts/interfaces", "@openzeppelin", "@solarity"],
 ```
 
 ## Known limitations
