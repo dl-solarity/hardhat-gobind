@@ -33,9 +33,7 @@
   "homepage": "https://github.com/dl-solarity/hardhat-gobind#readme",
   "scripts": {
     "install": "npx husky install",
-    "compile": "tsc --build .",
-    "build-local": "npm run compile && npm run lint-fix",
-    "clean": "rm -r dist",
+    "build": "tsc --build .",
     "test": "mocha --config .mocharc.json --recursive test/**/*.test.ts --timeout 10000 --exit",
     "lint-fix": "prettier --write \"./**/*.{ts,js,sol}\"",
     "publish-to-npm": "npm run compile && npm run lint-fix && npm publish ./ --access public"
