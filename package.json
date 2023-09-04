@@ -38,7 +38,7 @@
     "clean": "bash ./scripts/clean.sh",
     "test": "mocha --config .mocharc.json --recursive test/**/*.test.ts --timeout 10000 --exit",
     "lint-fix": "prettier --write \"./**/*.{ts,js,sol}\"",
-    "publish-to-npm": "npm run compile && npm run lint-fix && bash ./scripts/publish.sh"
+    "publish-to-npm": "npm run compile && npm run lint-fix && npm publish ./ --access public"
   },
   "dependencies": {
     "lodash": "4.17.21"
