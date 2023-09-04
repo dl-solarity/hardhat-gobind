@@ -1,16 +1,16 @@
 {
   "name": "@solarity/hardhat-gobind",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Generation of smart contract bindings for Golang",
-  "scripts": {
-    "install": "npx husky install",
-    "compile": "tsc --build .",
-    "build-local": "npm run compile && npm run lint-fix && bash ./scripts/build-local.sh",
-    "clean": "bash ./scripts/clean.sh",
-    "test": "mocha --config .mocharc.json --recursive test/**/*.test.ts --timeout 10000 --exit",
-    "lint-fix": "prettier --write \"./**/*.{ts,js,sol}\"",
-    "publish-to-npm": "npm run compile && npm run lint-fix && bash ./scripts/publish.sh"
-  },
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "files": [
+    "bin/",
+    "dist/src/",
+    "src/",
+    "LICENSE",
+    "README.md"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dl-solarity/hardhat-gobind.git"
@@ -18,8 +18,6 @@
   "keywords": [
     "ethereum",
     "solidity",
-
-    
     "smart-contracts",
     "go-bindings",
     "hardhat",
@@ -33,6 +31,16 @@
     "url": "https://github.com/dl-solarity/hardhat-gobind/issues"
   },
   "homepage": "https://github.com/dl-solarity/hardhat-gobind#readme",
+  "scripts": {
+    "install": "npx husky install",
+    "build": "tsc --build .",
+    "test": "mocha --config .mocharc.json --recursive test/**/*.test.ts --timeout 10000 --exit",
+    "lint-fix": "prettier --write \"./**/*.{ts,js,sol}\"",
+    "publish-to-npm": "npm run compile && npm run lint-fix && npm publish ./ --access public"
+  },
+  "dependencies": {
+    "lodash": "4.17.21"
+  },
   "peerDependencies": {
     "hardhat": "^2.10.0"
   },
@@ -42,7 +50,6 @@
     "chai": "^4.3.7",
     "hardhat": "^2.10.0",
     "husky": "^7.0.2",
-    "lodash": "^4.17.21",
     "mocha": "^10.2.0",
     "prettier": "^2.7.1",
     "prettier-plugin-solidity": "^1.1.1",
