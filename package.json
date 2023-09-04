@@ -34,8 +34,8 @@
   "scripts": {
     "install": "npx husky install",
     "compile": "tsc --build .",
-    "build-local": "npm run compile && npm run lint-fix && bash ./scripts/build-local.sh",
-    "clean": "bash ./scripts/clean.sh",
+    "build-local": "npm run compile && npm run lint-fix",
+    "clean": "rm -r dist",
     "test": "mocha --config .mocharc.json --recursive test/**/*.test.ts --timeout 10000 --exit",
     "lint-fix": "prettier --write \"./**/*.{ts,js,sol}\"",
     "publish-to-npm": "npm run compile && npm run lint-fix && npm publish ./ --access public"
