@@ -59,8 +59,8 @@ module.exports = class Generator {
 
       const abiPath = `${this.outDir}/${contract}.abi`;
       const genDir = `${this.outDir}/${path.dirname(source)}/${contract}`.toLowerCase();
-      const packageName = path.basename(contract).replaceAll("-", "").replaceAll("_", "").toLowerCase();
-      const genPath = `${genDir}/${contract}.${this.lang}`.toLowerCase();
+      const packageName = contract.replaceAll("-", "").replaceAll("_", "").toLowerCase();
+      const genPath = `${genDir}/${contract}.${this.lang}`;
 
       const argv = `abigen --abi ${abiPath} --pkg ${packageName} --type ${contract} --lang ${this.lang} --out ${genPath}`;
 
