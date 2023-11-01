@@ -106,8 +106,10 @@ Consider we have Hardhat project with the following structure (excluding some fi
     └── @openzeppelin
         └── contracts
             └── access
-                ├── Ownable.sol
-                └── Ownable2Step.sol
+                └── ownable
+                │   └── Ownable.sol
+                └── ownable2step
+                    └── Ownable2Step.sol
 ```
 
 `npx hardhat gobind` with the default configuration will create the following directory structure. Note there are no `node_modules` parent directory for `@openzeppelin` dependency.
@@ -124,8 +126,10 @@ generated-types
         ├── Example.go
         ├── Sample.go
         └── interfaces
-            ├── IExample.go
-            └── ISample.go
+            └── iexample
+            │   └── IExample.go
+            └── isample
+                └── ISample.go
 ```
 
 In most cases, you want bindings only for your `contracts/` directory, excluding `contracts/interfaces` and all the dependencies from `node_modules`.
