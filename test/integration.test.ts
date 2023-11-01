@@ -14,7 +14,7 @@ describe("GoBind x Hardhat integration", function () {
   const assertContractsGenerated = (outdir: string) => {
     assertExists(outdir);
     assertExists(`${outdir}/contracts`);
-    assertExists(`${outdir}/contracts/Lock.go`);
+    assertExists(`${outdir}/contracts/lock/Lock.go`);
   };
 
   describe("Main logic with default config", function () {
@@ -55,9 +55,11 @@ describe("GoBind x Hardhat integration", function () {
       assertNotExists(this.outdir);
     });
 
-    const contractPaths = ["Mock1.go", "Mock2.go"].map((p) => "contracts/" + p);
-    const interfacePaths = ["IMock1.go", "IMock2.go"].map((p) => "contracts/interfaces/" + p);
-    const dependecyPaths = ["access/Ownable.go", "utils/Context.go"].map((p) => "@openzeppelin/contracts/" + p);
+    const contractPaths = ["mock1/Mock1.go", "mock2/Mock2.go"].map((p) => "contracts/" + p);
+    const interfacePaths = ["imock1/IMock1.go", "imock2/IMock2.go"].map((p) => "contracts/interfaces/" + p);
+    const dependecyPaths = ["access/ownable/Ownable.go", "utils/context/Context.go"].map(
+      (p) => "@openzeppelin/contracts/" + p
+    );
     const allPaths = [...contractPaths, ...interfacePaths, ...dependecyPaths];
 
     const testCases = [
@@ -101,7 +103,7 @@ describe("GoBind x Hardhat integration", function () {
     });
 
     it(`for ${caseToString(0)} generates only Ownable.go`, async function () {
-      const ownablePath = "@openzeppelin/contracts/access/Ownable.go";
+      const ownablePath = "@openzeppelin/contracts/access/ownable/Ownable.go";
       this.env.config.gobind.onlyFiles = testCases[0].only;
       await this.env.run(TASK_GOBIND, abigenPath);
 
