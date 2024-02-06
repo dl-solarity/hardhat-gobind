@@ -66,6 +66,10 @@ module.exports = class Generator {
 
       this._verboseLog(`${contract}: ${source}`);
 
+      if (!fs.existsSync(this.outDir)) {
+        await fsp.mkdir(this.outDir, { recursive: true });
+      }
+
       await fsp.mkdir(genDir, { recursive: true });
       await fsp.writeFile(abiPath, JSON.stringify(artifact.abi));
 
