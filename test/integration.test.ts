@@ -58,7 +58,7 @@ describe("GoBind x Hardhat integration", function () {
     const contractPaths = ["mock1/Mock1.go", "mock2/Mock2.go"].map((p) => "contracts/" + p);
     const interfacePaths = ["imock1/IMock1.go", "imock2/IMock2.go"].map((p) => "contracts/interfaces/" + p);
     const dependecyPaths = ["access/ownable/Ownable.go", "utils/context/Context.go"].map(
-      (p) => "@openzeppelin/contracts/" + p
+      (p) => "@openzeppelin/contracts/" + p,
     );
     const allPaths = [...contractPaths, ...interfacePaths, ...dependecyPaths];
 
@@ -110,7 +110,7 @@ describe("GoBind x Hardhat integration", function () {
       assertGenerated(this.outdir, [ownablePath]);
       assertNotGenerated(
         this.outdir,
-        allPaths.filter((p) => p != ownablePath)
+        allPaths.filter((p) => p != ownablePath),
       );
     });
 

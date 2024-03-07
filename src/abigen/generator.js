@@ -49,7 +49,7 @@ module.exports = class Generator {
 
   async _generate(artifactNames) {
     this._verboseLog(
-      `Generating bindings into ${this.outDir} ${this.deployable ? "with" : "without"} deployment method\n`
+      `Generating bindings into ${this.outDir} ${this.deployable ? "with" : "without"} deployment method\n`,
     );
 
     for (const name of artifactNames) {

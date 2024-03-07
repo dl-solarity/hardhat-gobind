@@ -39,7 +39,7 @@ task(TASK_GOBIND, "Generate Go bindings for compiled contracts")
     "outdir",
     "Output directory for generated bindings (Go package name is derived from it as well)",
     undefined,
-    types.string
+    types.string,
   )
   .addFlag("deployable", "Generate bindings with the bytecode in order to deploy the contracts within Go")
   .addFlag("noCompile", "Do not compile smart contracts before the generation")
@@ -51,14 +51,14 @@ task(TASK_COMPILE)
     async (
       { generateBindings, _abigenPath }: { generateBindings: boolean; _abigenPath?: string },
       { config, run },
-      runSuper
+      runSuper,
     ) => {
       await runSuper();
 
       if (config.gobind.runOnCompile || generateBindings) {
         await run(TASK_GOBIND, { noCompile: true, _abigenPath: _abigenPath });
       }
-    }
+    },
   );
 
 task(TASK_CLEAN, "Clears the cache and deletes all artifacts").setAction(
@@ -71,5 +71,5 @@ task(TASK_CLEAN, "Clears the cache and deletes all artifacts").setAction(
       }
 
     await runSuper();
-  }
+  },
 );

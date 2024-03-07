@@ -340,8 +340,8 @@
                     this._resume();
                   }
                 },
-                getInt64(sp + 8) + 1 // setTimeout has been seen to fire up to 1 millisecond early
-              )
+                getInt64(sp + 8) + 1, // setTimeout has been seen to fire up to 1 millisecond early
+              ),
             );
             this.mem.setInt32(sp + 16, id, true);
           },
