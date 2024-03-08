@@ -19,17 +19,13 @@ export function useEnvironment(fixtureProjectName: string, networkName = "hardha
     this.outdir = this.env.config.gobind.outdir;
   });
 
-  afterEach("Resetting hardhat", function () {
+  afterEach("Resetting hardhat", async function () {
     resetHardhatContext();
+
+    await this.env.run(TASK_CLEAN);
   });
 
   after("Performing cleanup of all the redundant files", async function () {
-    await this.env.run(TASK_CLEAN);
-  });
-}
-
-export function cleanAfterEach() {
-  afterEach(async function () {
     await this.env.run(TASK_CLEAN);
   });
 }

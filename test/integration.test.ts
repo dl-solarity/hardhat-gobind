@@ -4,7 +4,7 @@ import { resolve } from "path";
 import { TASK_CLEAN, TASK_COMPILE } from "hardhat/builtin-tasks/task-names";
 
 import { TASK_GOBIND } from "../src/constants";
-import { useEnvironment, cleanAfterEach } from "./helpers";
+import { useEnvironment } from "./helpers";
 
 describe("GoBind x Hardhat integration", function () {
   const abigenPath = { _abigenPath: "../../../bin/abigen.wasm" };
@@ -33,6 +33,8 @@ describe("GoBind x Hardhat integration", function () {
     });
 
     it("cleans up generated bindings", async function () {
+      await this.env.run(TASK_COMPILE, { generateBindings: true, ...abigenPath });
+
       assertExists(this.outdir);
 
       await this.env.run(TASK_CLEAN);
@@ -49,9 +51,8 @@ describe("GoBind x Hardhat integration", function () {
 
   describe("onlyFiles, skipFiles parameters", function () {
     useEnvironment("hardhat-project-extended");
-    cleanAfterEach();
 
-    this.beforeEach(function () {
+    beforeEach(async function () {
       assertNotExists(this.outdir);
     });
 
@@ -158,7 +159,6 @@ describe("GoBind x Hardhat integration", function () {
 
   describe("Misc config fields and flag tests", function () {
     useEnvironment("hardhat-project-defined-config");
-    cleanAfterEach();
 
     it("generates bindings into the custom outdir", async function () {
       const outdir = resolve("go");
