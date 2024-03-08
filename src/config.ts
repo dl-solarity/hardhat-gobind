@@ -1,6 +1,8 @@
-import { NomicLabsHardhatPluginError } from "hardhat/plugins";
-import { ConfigExtender } from "hardhat/types";
 import { isAbsolute } from "path";
+
+import { ConfigExtender } from "hardhat/types";
+import { NomicLabsHardhatPluginError } from "hardhat/plugins";
+
 import { pluginName } from "./constants";
 
 export const getDefaultGoBindConfig: ConfigExtender = (resolvedConfig, config) => {

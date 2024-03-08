@@ -1,8 +1,8 @@
-import { TASK_CLEAN } from "hardhat/builtin-tasks/task-names";
-import { resetHardhatContext } from "hardhat/plugins-testing";
-import { HardhatRuntimeEnvironment } from "hardhat/types";
-
 import path from "path";
+
+import { HardhatRuntimeEnvironment } from "hardhat/types";
+import { resetHardhatContext } from "hardhat/plugins-testing";
+import { TASK_CLEAN } from "hardhat/builtin-tasks/task-names";
 
 declare module "mocha" {
   interface Context {
@@ -22,10 +22,6 @@ export function useEnvironment(fixtureProjectName: string, networkName = "hardha
   afterEach("Resetting hardhat", async function () {
     resetHardhatContext();
 
-    await this.env.run(TASK_CLEAN);
-  });
-
-  after("Performing cleanup of all the redundant files", async function () {
     await this.env.run(TASK_CLEAN);
   });
 }

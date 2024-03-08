@@ -1,8 +1,8 @@
 require("./wasm/wasm_exec_node");
 
-const path = require("path");
 const fs = require("fs");
 const fsp = require("fs/promises");
+const path = require("path");
 
 module.exports = class Generator {
   constructor(hre, abigenPath = "./node_modules/@solarity/hardhat-gobind/bin/abigen.wasm") {

@@ -1,8 +1,10 @@
-import { assert } from "chai";
 import path from "path";
 
-import Generator from "../src/abigen/generator";
+import { assert } from "chai";
+
 import { useEnvironment } from "./helpers";
+
+import Generator from "../src/abigen/generator";
 
 describe("hardhat-gobind configuration extension", function () {
   useEnvironment("hardhat-project-defined-config", "hardhat");
