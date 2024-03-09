@@ -89,6 +89,7 @@ The plugin runs `compile` task (if `--no-compile` is not given), gets the artifa
 4. Calls `abigen` via WebAssembly: `abigen --abi /path/to/file.abi --pkg packagename --type ContractName --lang go --out /path/to/your_project/your_outdir` (and `--bin /path/to/file.bin`, if necessary).
 5. Removes temporary files.
 
+
 Bindings are generated for contracts, not files. Having 3 contracts in a single file, you get 3 `.go` files named after contracts. If you skip the file, all 3 contracts are ignored.
 
 Consider we have Hardhat project with the following structure (excluding some files for brevity):
@@ -106,9 +107,9 @@ Consider we have Hardhat project with the following structure (excluding some fi
     └── @openzeppelin
         └── contracts
             └── access
-                └── ownable
+                └── Ownable
                 │   └── Ownable.sol
-                └── ownable2step
+                └── Ownable2Step
                     └── Ownable2Step.sol
 ```
 
@@ -126,9 +127,9 @@ generated-types
         ├── Example.go
         ├── Sample.go
         └── interfaces
-            └── iexample
+            └── IExample
             │   └── IExample.go
-            └── isample
+            └── ISample
                 └── ISample.go
 ```
 
