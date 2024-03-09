@@ -1,10 +1,12 @@
 import { assert } from "chai";
-import { existsSync } from "fs";
 import { resolve } from "path";
+import { existsSync } from "fs";
+
 import { TASK_CLEAN, TASK_COMPILE } from "hardhat/builtin-tasks/task-names";
 
+import { useEnvironment } from "./helpers";
+
 import { TASK_GOBIND } from "../src/constants";
-import { useEnvironment, cleanAfterEach } from "./helpers";
 
 describe("GoBind x Hardhat integration", function () {
   const abigenPath = { _abigenPath: "../../../bin/abigen.wasm" };
@@ -14,7 +16,7 @@ describe("GoBind x Hardhat integration", function () {
   const assertContractsGenerated = (outdir: string) => {
     assertExists(outdir);
     assertExists(`${outdir}/contracts`);
-    assertExists(`${outdir}/contracts/lock/Lock.go`);
+    assertExists(`${outdir}/contracts/Lock/Lock.go`);
   };
 
   describe("Main logic with default config", function () {
@@ -22,6 +24,7 @@ describe("GoBind x Hardhat integration", function () {
 
     it("does not generate bindings with --no-compile and no artifacts", async function () {
       await this.env.run(TASK_GOBIND, { noCompile: true, ...abigenPath });
+
       assertNotExists(this.outdir);
     });
 
@@ -29,13 +32,17 @@ describe("GoBind x Hardhat integration", function () {
       assertNotExists(this.outdir);
 
       await this.env.run(TASK_GOBIND, abigenPath);
+
       assertContractsGenerated(this.outdir);
     });
 
     it("cleans up generated bindings", async function () {
+      await this.env.run(TASK_COMPILE, { generateBindings: true, ...abigenPath });
+
       assertExists(this.outdir);
 
       await this.env.run(TASK_CLEAN);
+
       assertNotExists(this.outdir);
     });
 
@@ -43,21 +50,21 @@ describe("GoBind x Hardhat integration", function () {
       assertNotExists(this.outdir);
 
       await this.env.run(TASK_COMPILE, { generateBindings: true, ...abigenPath });
+
       assertContractsGenerated(this.outdir);
     });
   });
 
   describe("onlyFiles, skipFiles parameters", function () {
     useEnvironment("hardhat-project-extended");
-    cleanAfterEach();
 
-    this.beforeEach(function () {
+    beforeEach(async function () {
       assertNotExists(this.outdir);
     });
 
-    const contractPaths = ["mock1/Mock1.go", "mock2/Mock2.go"].map((p) => "contracts/" + p);
-    const interfacePaths = ["imock1/IMock1.go", "imock2/IMock2.go"].map((p) => "contracts/interfaces/" + p);
-    const dependecyPaths = ["access/ownable/Ownable.go", "utils/context/Context.go"].map(
+    const contractPaths = ["Mock1/Mock1.go", "Mock2/Mock2.go"].map((p) => "contracts/" + p);
+    const interfacePaths = ["IMock1/IMock1.go", "IMock2/IMock2.go"].map((p) => "contracts/interfaces/" + p);
+    const dependecyPaths = ["access/Ownable/Ownable.go", "utils/Context/Context.go"].map(
       (p) => "@openzeppelin/contracts/" + p,
     );
     const allPaths = [...contractPaths, ...interfacePaths, ...dependecyPaths];
@@ -81,6 +88,7 @@ describe("GoBind x Hardhat integration", function () {
 
     const assertGenerated = (outdir: string, paths: string[]) => {
       assertExists(outdir);
+
       paths.forEach((p) => assertExists(`${outdir}/${p}`));
     };
 
@@ -92,6 +100,7 @@ describe("GoBind x Hardhat integration", function () {
         "any-folder/non-existent-file.txt",
         "any-folder/another-bad-file.go",
       ];
+
       paths.concat(wrongPaths).forEach((p) => assertNotExists(`${outdir}/${p}`));
     };
 
@@ -103,8 +112,9 @@ describe("GoBind x Hardhat integration", function () {
     });
 
     it(`for ${caseToString(0)} generates only Ownable.go`, async function () {
-      const ownablePath = "@openzeppelin/contracts/access/ownable/Ownable.go";
+      const ownablePath = "@openzeppelin/contracts/access/Ownable/Ownable.go";
       this.env.config.gobind.onlyFiles = testCases[0].only;
+
       await this.env.run(TASK_GOBIND, abigenPath);
 
       assertGenerated(this.outdir, [ownablePath]);
@@ -150,6 +160,7 @@ describe("GoBind x Hardhat integration", function () {
     it(`for ${caseToString(5)} generates nothing`, async function () {
       this.env.config.gobind.onlyFiles = testCases[5].only;
       this.env.config.gobind.skipFiles = testCases[5].skip;
+
       await this.env.run(TASK_GOBIND, abigenPath);
 
       assertNotGenerated(this.outdir, allPaths);
@@ -158,28 +169,32 @@ describe("GoBind x Hardhat integration", function () {
 
   describe("Misc config fields and flag tests", function () {
     useEnvironment("hardhat-project-defined-config");
-    cleanAfterEach();
 
     it("generates bindings into the custom outdir", async function () {
       const outdir = resolve("go");
       assertNotExists(outdir);
 
       await this.env.run(TASK_GOBIND, abigenPath);
+
       assertContractsGenerated(outdir);
     });
 
     it("overrides output directory with --outdir", async function () {
       const relOutdir = "generated-types/flag-outdir";
       const outdir = resolve(relOutdir);
+
       assertNotExists(outdir);
 
       await this.env.run(TASK_GOBIND, { outdir: relOutdir, ...abigenPath });
+
       assertContractsGenerated(outdir);
     });
 
     it("automatically generates bindings with runOnCompile", async function () {
       assertNotExists(this.outdir);
+
       await this.env.run(TASK_COMPILE, abigenPath);
+
       assertContractsGenerated(this.outdir);
     });
   });

@@ -1,13 +1,16 @@
 const Generator = require("./abigen/generator");
 
-import { TASK_CLEAN, TASK_COMPILE } from "hardhat/builtin-tasks/task-names";
 import { extendConfig, task, types } from "hardhat/config";
 import { NomicLabsHardhatPluginError } from "hardhat/plugins";
 
+import { TASK_CLEAN, TASK_COMPILE } from "hardhat/builtin-tasks/task-names";
+
+import { ActionType } from "hardhat/types";
+
 import "./type-extensions";
+
 import { getDefaultGoBindConfig } from "./config";
 import { TASK_GOBIND, pluginName } from "./constants";
-import { ActionType } from "hardhat/types";
 
 interface BindingArgs {
   outdir?: string;
@@ -28,6 +31,7 @@ const gobind: ActionType<BindingArgs> = async ({ outdir, deployable, noCompile, 
 
   try {
     const contracts = await new Generator(hre, _abigenPath).generate();
+
     console.log(`\nGenerated bindings for ${contracts.length} contracts`);
   } catch (e: any) {
     throw new NomicLabsHardhatPluginError(pluginName, e.message);

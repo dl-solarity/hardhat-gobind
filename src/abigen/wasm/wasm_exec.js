@@ -14,20 +14,13 @@
   if (!globalThis.fs) {
     let outputBuf = "";
     globalThis.fs = {
-      constants: {
-        O_WRONLY: -1,
-        O_RDWR: -1,
-        O_CREAT: -1,
-        O_TRUNC: -1,
-        O_APPEND: -1,
-        O_EXCL: -1,
-      }, // unused
+      constants: { O_WRONLY: -1, O_RDWR: -1, O_CREAT: -1, O_TRUNC: -1, O_APPEND: -1, O_EXCL: -1 }, // unused
       writeSync(fd, buf) {
         outputBuf += decoder.decode(buf);
         const nl = outputBuf.lastIndexOf("\n");
         if (nl != -1) {
-          console.log(outputBuf.substr(0, nl));
-          outputBuf = outputBuf.substr(nl + 1);
+          console.log(outputBuf.substring(0, nl));
+          outputBuf = outputBuf.substring(nl + 1);
         }
         return buf.length;
       },
@@ -182,6 +175,10 @@
         this.mem.setUint32(addr + 4, Math.floor(v / 4294967296), true);
       };
 
+      const setInt32 = (addr, v) => {
+        this.mem.setUint32(addr + 0, v, true);
+      };
+
       const getInt64 = (addr) => {
         const low = this.mem.getUint32(addr + 0, true);
         const high = this.mem.getInt32(addr + 4, true);
@@ -275,6 +272,9 @@
 
       const timeOrigin = Date.now() - performance.now();
       this.importObject = {
+        _gotest: {
+          add: (a, b) => a + b,
+        },
         go: {
           // Go's SP does not change as long as no Go code is running. Some operations (e.g. calls, getters and setters)
           // may synchronously trigger a Go event handler. This makes Go code get executed in the middle of the imported
@@ -340,7 +340,7 @@
                     this._resume();
                   }
                 },
-                getInt64(sp + 8) + 1, // setTimeout has been seen to fire up to 1 millisecond early
+                getInt64(sp + 8),
               ),
             );
             this.mem.setInt32(sp + 16, id, true);
@@ -575,15 +575,6 @@
       const argvPtrs = [];
       this.argv.forEach((arg) => {
         argvPtrs.push(strPtr(arg));
-      });
-      argvPtrs.push(0);
-
-      const keys = Object.keys(this.env).sort();
-      keys.forEach((key) => {
-        if (key.startsWith("GITHUB_")) {
-          return;
-        }
-        argvPtrs.push(strPtr(`${key}=${this.env[key]}`));
       });
       argvPtrs.push(0);
 

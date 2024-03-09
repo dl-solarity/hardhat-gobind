@@ -1,6 +1,8 @@
 import { assert } from "chai";
-import Generator from "../src/abigen/generator";
+
 import { useEnvironment } from "./helpers";
+
+import Generator from "../src/abigen/generator";
 
 describe("GoBind Generator class", function () {
   useEnvironment("hardhat-project-undefined-config");

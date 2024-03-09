@@ -1,8 +1,8 @@
 require("./wasm/wasm_exec_node");
 
-const path = require("path");
 const fs = require("fs");
 const fsp = require("fs/promises");
+const path = require("path");
 
 module.exports = class Generator {
   constructor(hre, abigenPath = "./node_modules/@solarity/hardhat-gobind/bin/abigen.wasm") {
@@ -58,11 +58,13 @@ module.exports = class Generator {
       const source = artifact.sourceName;
 
       const abiPath = `${this.outDir}/${contract}.abi`;
-      const genDir = `${this.outDir}/${path.dirname(source)}/${contract}`.toLowerCase();
+      const genDir = `${this.outDir}/${path.dirname(source)}/${contract}`;
       const packageName = contract.replaceAll("-", "").replaceAll("_", "").toLowerCase();
       const genPath = `${genDir}/${contract}.${this.lang}`;
 
       const argv = `abigen --abi ${abiPath} --pkg ${packageName} --type ${contract} --lang ${this.lang} --out ${genPath}`;
+
+      this._verboseLog(`Generating bindings: ${argv}`);
 
       this._verboseLog(`${contract}: ${source}`);
 
