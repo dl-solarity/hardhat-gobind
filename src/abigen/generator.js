@@ -64,6 +64,8 @@ module.exports = class Generator {
 
       const argv = `abigen --abi ${abiPath} --pkg ${packageName} --type ${contract} --lang ${this.lang} --out ${genPath}`;
 
+      this._verboseLog(`Generating bindings: ${argv}`);
+
       this._verboseLog(`${contract}: ${source}`);
 
       if (!fs.existsSync(this.outDir)) {
