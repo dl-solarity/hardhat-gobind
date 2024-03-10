@@ -97,18 +97,18 @@ Consider we have Hardhat project with the following structure (excluding some fi
 ```
 .
 ├── contracts
-│   ├── Example.sol
-│   ├── Sample.sol
-│   └── interfaces
-│       ├── IExample.sol
-│       └── ISample.sol
+│   ├── Example.sol
+│   ├── Sample.sol
+│   └── interfaces
+│       ├── IExample.sol
+│       └── ISample.sol
 ├── hardhat.config.ts
 └── node_modules
     └── @openzeppelin
         └── contracts
             └── access
-                └── Ownable
-                │   └── Ownable.sol
+                ├── Ownable
+                │   └── Ownable.sol
                 └── Ownable2Step
                     └── Ownable2Step.sol
 ```
@@ -119,17 +119,22 @@ Consider we have Hardhat project with the following structure (excluding some fi
 generated-types
 └── bindings
     ├── @openzeppelin
-    │   └── contracts
-    │       └── access
-    │           ├── Ownable.go
-    │           └── Ownable2Step.go
+    │   └── contracts
+    │       └── access
+    │           ├── ownable
+    │           │   └── Ownable.go
+    │           └── ownable2step
+    │               └── Ownable2Step.go
+    │          
     └── contracts
-        ├── Example.go
-        ├── Sample.go
+        ├── example
+        │   └── Example.go
+        ├── sample
+        │   └── Sample.go
         └── interfaces
-            └── IExample
-            │   └── IExample.go
-            └── ISample
+            ├── iexample
+            │   └── IExample.go
+            └── isample
                 └── ISample.go
 ```
 
@@ -146,3 +151,4 @@ skipFiles: ["contracts/interfaces", "@openzeppelin", "@solarity"],
 
 - `--verbose` is not available in CLI because of names clash with Hardhat. [Learn more](https://hardhat.org/hardhat-runner/docs/errors#HH202).
 - `node_modules` must not be present in the path.
+- All environment variables are omitted when the abigen.wasm is called
