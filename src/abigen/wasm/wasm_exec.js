@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+// Source: https://github.com/golang/go/blob/48b10c9af7955bcab179b60a148a633a0a75cde7/misc/wasm/wasm_exec.js
+
+// This file is a modified version of the original wasm_exec.js file from the Go project.
+// Changes:
+// - Removed environment variables passing to the binary
+
 "use strict";
 
 (() => {
