@@ -64,7 +64,7 @@ module.exports = class Generator {
       const genDir = `${this.outDir}/${path.dirname(source)}/${packageName}`;
       const genPath = `${genDir}/${contract}.${this.lang}`;
 
-      const argv = `abigen --abi ${abiPath} --pkg ${packageName} --type ${contract} --lang ${this.lang} --out ${genPath}`;
+      const argv = `abigen --abi ${abiPath} --pkg ${packageName} --type ${contract} --out ${genPath}`;
 
       this._verboseLog(`Generating bindings: ${argv}`);
 
