@@ -25,7 +25,7 @@ extendConfig(getDefaultGoBindConfig);
 const gobind: ActionType<BindingArgs> = async ({ outdir, deployable, noCompile, v2, _abigenPath }, hre) => {
   hre.config.gobind.outdir = outdir === undefined ? hre.config.gobind.outdir : outdir;
   hre.config.gobind.deployable = !deployable ? hre.config.gobind.deployable : deployable;
-  hre.config.gobind.abigenVersion = !v2 ? hre.config.gobind.abigenVersion : 2;
+  hre.config.gobind.abigenVersion = !v2 ? hre.config.gobind.abigenVersion : "v2";
 
   if (!noCompile) {
     await hre.run(TASK_COMPILE, { generateBind: false, v2: v2, _abigenPath: _abigenPath });

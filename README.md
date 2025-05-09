@@ -57,7 +57,7 @@ module.exports = {
     outdir: "./generated-types/bindings",
     deployable: false,
     runOnCompile: false,
-    abigenVersion: 1,
+    abigenVersion: "v1",
     verbose: false,
     onlyFiles: [],
     skipFiles: [],
@@ -68,7 +68,7 @@ module.exports = {
 - `outdir` : The directory where the generated bindings will be placed
 - `deployable` : Generates the bindings with the bytecode (makes them deployable within Go)
 - `runOnCompile` : Whether to run bindings generation on compilation
-- `abigenVersion`: The version of abigen to use (1 or 2)
+- `abigenVersion`: The version of abigen to use (v1 or v2)
 - `verbose`: Detailed logging on generation (e.g. count of included and skipped contracts, source paths, names)
 - `onlyFiles`: If specified, bindings will be generated **only for matching** sources, other will be ignored
 - `skipFiles`: Bindings will not be generated for **any matching** sources, also if those match `onlyFiles`

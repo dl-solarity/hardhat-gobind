@@ -4,13 +4,14 @@ import { ConfigExtender } from "hardhat/types";
 import { NomicLabsHardhatPluginError } from "hardhat/plugins";
 
 import { pluginName } from "./constants";
+import { DlGoBindConfig } from "./types";
 
 export const getDefaultGoBindConfig: ConfigExtender = (resolvedConfig, config) => {
-  const defaultConfig = {
+  const defaultConfig: DlGoBindConfig = {
     outdir: "./generated-types/bindings",
     deployable: false,
     runOnCompile: false,
-    abigenVersion: 1,
+    abigenVersion: "v1",
     verbose: false,
     onlyFiles: [],
     skipFiles: [],

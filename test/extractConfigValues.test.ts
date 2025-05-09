@@ -19,7 +19,7 @@ describe("hardhat-gobind configuration extension", function () {
     assert.equal(gobind.outdir, "go");
     assert.equal(gobind.deployable, true);
     assert.equal(gobind.runOnCompile, true);
-    assert.equal(gobind.abigenVersion, 1);
+    assert.equal(gobind.abigenVersion, "v2");
     assert.equal(gobind.verbose, true);
     assert.deepEqual(gobind.onlyFiles, ["./contracts", "local/MyContract.sol"]);
     assert.deepEqual(gobind.skipFiles, ["@openzeppelin", "./contracts/interfaces"]);
@@ -30,7 +30,7 @@ describe("hardhat-gobind configuration extension", function () {
 
     assert.equal(instance.outDir, path.resolve("go"));
     assert.equal(instance.deployable, true);
-    assert.equal(instance.abigenVersion, 1);
+    assert.equal(instance.abigenVersion, "v2");
     assert.deepEqual(instance.onlyFiles, ["contracts", "local/MyContract.sol"]);
     assert.deepEqual(instance.skipFiles, ["@openzeppelin", "contracts/interfaces"]);
   });
@@ -50,7 +50,7 @@ describe("hardhat-gobind configuration defaults in an empty project", function (
     assert.equal(gobind.deployable, false);
     assert.equal(gobind.runOnCompile, false);
     assert.equal(gobind.verbose, false);
-    assert.equal(gobind.abigenVersion, 1);
+    assert.equal(gobind.abigenVersion, "v1");
     assert.deepEqual(gobind.onlyFiles, []);
     assert.deepEqual(gobind.skipFiles, []);
   });
@@ -60,7 +60,7 @@ describe("hardhat-gobind configuration defaults in an empty project", function (
 
     assert.equal(instance.outDir, path.resolve("generated-types/bindings"));
     assert.equal(instance.deployable, false);
-    assert.equal(instance.abigenVersion, 1);
+    assert.equal(instance.abigenVersion, "v1");
     assert.deepEqual(instance.onlyFiles, []);
     assert.deepEqual(instance.skipFiles, []);
   });

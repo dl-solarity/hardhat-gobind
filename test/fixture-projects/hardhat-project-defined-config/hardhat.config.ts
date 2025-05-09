@@ -9,7 +9,7 @@ const config: HardhatUserConfig = {
     outdir: "go",
     deployable: true,
     runOnCompile: true,
-    abigenVersion: 1,
+    abigenVersion: "v2",
     verbose: true,
     onlyFiles: ["./contracts", "local/MyContract.sol"],
     skipFiles: ["@openzeppelin", "./contracts/interfaces"],
