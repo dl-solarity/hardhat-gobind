@@ -57,6 +57,7 @@ module.exports = {
     outdir: "./generated-types/bindings",
     deployable: false,
     runOnCompile: false,
+    abigenVersion: "v1",
     verbose: false,
     onlyFiles: [],
     skipFiles: [],
@@ -67,6 +68,7 @@ module.exports = {
 - `outdir` : The directory where the generated bindings will be placed
 - `deployable` : Generates the bindings with the bytecode (makes them deployable within Go)
 - `runOnCompile` : Whether to run bindings generation on compilation
+- `abigenVersion`: The version of abigen to use (v1 or v2)
 - `verbose`: Detailed logging on generation (e.g. count of included and skipped contracts, source paths, names)
 - `onlyFiles`: If specified, bindings will be generated **only for matching** sources, other will be ignored
 - `skipFiles`: Bindings will not be generated for **any matching** sources, also if those match `onlyFiles`
@@ -86,7 +88,7 @@ The plugin runs `compile` task (if `--no-compile` is not given), gets the artifa
 1. Writes contract's ABI (and bytecode, if necessary) into a temporary file `ContractName.abi` (and `ContractName.bin` with bytecode).
 2. Derives destination folder from the original file location: if the file is in `./contracts`, the folder will be `./your_outdir/contracts`.
 3. Derives Go package name from the parent folder: for `./your_outdir/nested/My_Contracts` it will be `mycontracts`.
-4. Calls `abigen` via WebAssembly: `abigen --abi /path/to/file.abi --pkg packagename --type ContractName --lang go --out /path/to/your_project/your_outdir` (and `--bin /path/to/file.bin`, if necessary).
+4. Depending on the presence of `--v2` flag, it calls `abigen` or `abigen v2` via WebAssembly: `abigen `(`--v2`)` --abi /path/to/file.abi --pkg packagename --type ContractName --out /path/to/your_project/your_outdir` (and `--bin /path/to/file.bin`, if necessary).
 5. Removes temporary files.
 
 

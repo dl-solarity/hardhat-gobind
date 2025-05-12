@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Source: https://github.com/golang/go/blob/48b10c9af7955bcab179b60a148a633a0a75cde7/misc/wasm/wasm_exec.js
+// Source: https://github.com/golang/go/blob/release-branch.go1.24/lib/wasm/wasm_exec.js
 
 // This file is a modified version of the original wasm_exec.js file from the Go project.
 // Changes:
@@ -20,7 +20,7 @@
   if (!globalThis.fs) {
     let outputBuf = "";
     globalThis.fs = {
-      constants: { O_WRONLY: -1, O_RDWR: -1, O_CREAT: -1, O_TRUNC: -1, O_APPEND: -1, O_EXCL: -1 }, // unused
+      constants: { O_WRONLY: -1, O_RDWR: -1, O_CREAT: -1, O_TRUNC: -1, O_APPEND: -1, O_EXCL: -1, O_DIRECTORY: -1 }, // unused
       writeSync(fd, buf) {
         outputBuf += decoder.decode(buf);
         const nl = outputBuf.lastIndexOf("\n");
@@ -137,6 +137,14 @@
       },
       chdir() {
         throw enosys();
+      },
+    };
+  }
+
+  if (!globalThis.path) {
+    globalThis.path = {
+      resolve(...pathSegments) {
+        return pathSegments.join("/");
       },
     };
   }
@@ -276,12 +284,18 @@
         return decoder.decode(new DataView(this._inst.exports.mem.buffer, saddr, len));
       };
 
+      const testCallExport = (a, b) => {
+        this._inst.exports.testExport0();
+        return this._inst.exports.testExport(a, b);
+      };
+
       const timeOrigin = Date.now() - performance.now();
       this.importObject = {
         _gotest: {
           add: (a, b) => a + b,
+          callExport: testCallExport,
         },
-        go: {
+        gojs: {
           // Go's SP does not change as long as no Go code is running. Some operations (e.g. calls, getters and setters)
           // may synchronously trigger a Go event handler. This makes Go code get executed in the middle of the imported
           // function. A goroutine can switch to a new stack if the current stack is too small (see morestack function).

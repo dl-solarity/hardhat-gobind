@@ -6,6 +6,12 @@ const path = require("path");
 
 module.exports = class Generator {
   constructor(hre, abigenPath = "./node_modules/@solarity/hardhat-gobind/bin/abigen.wasm") {
+    this.abigenVersion = hre.config.gobind.abigenVersion;
+
+    if (this.abigenVersion != "v1" && this.abigenVersion != "v2") {
+      throw new Error(`Unsupported abigen version: ${this.abigenVersion}`);
+    }
+
     this.abigenPath = path.resolve(abigenPath);
     this.lang = "go";
     this.artifacts = hre.artifacts;
@@ -64,7 +70,8 @@ module.exports = class Generator {
       const genDir = `${this.outDir}/${path.dirname(source)}/${packageName}`;
       const genPath = `${genDir}/${contract}.${this.lang}`;
 
-      const argv = `abigen --abi ${abiPath} --pkg ${packageName} --type ${contract} --lang ${this.lang} --out ${genPath}`;
+      const v2Flag = this.abigenVersion == "v1" ? `` : ` --v2`;
+      const argv = `abigen${v2Flag} --abi ${abiPath} --pkg ${packageName} --type ${contract} --out ${genPath}`;
 
       this._verboseLog(`Generating bindings: ${argv}`);
 
