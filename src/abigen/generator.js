@@ -6,6 +6,7 @@ const path = require("path");
 
 module.exports = class Generator {
   constructor(hre, abigenPath = "./node_modules/@solarity/hardhat-gobind/bin/abigen.wasm") {
+    this.hre = hre;
     this.abigenVersion = hre.config.gobind.abigenVersion;
 
     if (this.abigenVersion != "v1" && this.abigenVersion != "v2") {
@@ -114,7 +115,7 @@ module.exports = class Generator {
   }
 
   _verboseLog(msg) {
-    if (hre.config.gobind.verbose) {
+    if (this.hre && this.hre.config && this.hre.config.gobind && this.hre.config.gobind.verbose) {
       console.log(msg);
     }
   }

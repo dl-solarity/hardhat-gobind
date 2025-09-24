@@ -4,6 +4,10 @@
   "description": "Generation of smart contract bindings for Golang",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
+  "exports": {
+    ".": "./dist/src/index.js"
+  },
+  "type": "module",
   "files": [
     "bin/",
     "dist/src/",
@@ -34,26 +38,35 @@
   "scripts": {
     "prepare": "husky",
     "build": "tsc --build .",
-    "test": "mocha --config .mocharc.json --recursive test/**/*.test.ts --timeout 10000 --exit",
+    "test": "mocha --config .mocharc.json --recursive test/**/*.test.cts --timeout 10000 --exit",
     "lint-fix": "prettier --write \"./**/*.{ts,js,sol}\"",
     "publish-to-npm": "npm run build && npm run lint-fix && npm publish ./ --access public"
   },
   "dependencies": {
-    "lodash": "4.17.21"
+    "@nomicfoundation/hardhat-utils": "3.0.0",
+    "@nomicfoundation/hardhat-zod-utils": "3.0.0",
+    "lodash": "4.17.21",
+    "zod": "3.25.76"
   },
   "peerDependencies": {
-    "hardhat": "^2.10.0"
+    "hardhat": "^3.0.0"
   },
   "devDependencies": {
+    "@tsconfig/node22": "^22.0.2",
     "@types/chai": "^4.3.20",
     "@types/mocha": "^10.0.10",
+    "@typescript-eslint/eslint-plugin": "^8.44.1",
     "chai": "^4.5.0",
-    "hardhat": "^2.24.0",
+    "eslint": "^9.36.0",
+    "eslint-plugin-promise": "^7.2.1",
+    "hardhat": "^3.0.6",
     "husky": "^9.1.7",
+    "jiti": "^2.6.0",
     "mocha": "^11.2.2",
     "prettier": "^3.5.3",
     "prettier-plugin-solidity": "^2.0.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.44.1"
   }
 }

@@ -2,9 +2,12 @@ import path from "path";
 
 import { assert } from "chai";
 
-import { useEnvironment } from "./helpers";
+import { useEnvironment } from "./helpers.cjs";
 
-import Generator from "../src/abigen/generator";
+// Type import for CJS generator declarations
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import Generator from "../src/abigen/generator.cjs";
 
 describe("hardhat-gobind configuration extension", function () {
   useEnvironment("hardhat-project-defined-config", "hardhat");

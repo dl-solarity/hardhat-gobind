@@ -1,10 +1,10 @@
-import "../../../src/index";
+import gobind from "../../../src/index.js";
 
-import { HardhatUserConfig } from "hardhat/types";
+import type { HardhatUserConfig } from "hardhat/config";
 
 const config: HardhatUserConfig = {
   solidity: "0.8.9",
-  defaultNetwork: "hardhat",
+  plugins: [gobind],
 };
 
 export default config;
