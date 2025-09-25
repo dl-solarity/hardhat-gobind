@@ -1,7 +1,7 @@
 import { isAbsolute } from "path";
 
 import { ConfigExtender } from "hardhat/types";
-import { NomicLabsHardhatPluginError } from "hardhat/plugins";
+import { HardhatPluginError } from "hardhat/plugins";
 
 import { pluginName } from "./constants";
 import { DlGoBindConfig } from "./types";
@@ -23,11 +23,11 @@ export const getDefaultGoBindConfig: ConfigExtender = (resolvedConfig, config) =
   }
 
   if (!areRelativePaths(config.gobind.onlyFiles)) {
-    throw new NomicLabsHardhatPluginError(pluginName, "config.gobind.onlyFiles must only include relative paths");
+    throw new HardhatPluginError(pluginName, "config.gobind.onlyFiles must only include relative paths");
   }
 
   if (!areRelativePaths(config.gobind.skipFiles)) {
-    throw new NomicLabsHardhatPluginError(pluginName, "config.gobind.skipFiles must only include relative paths");
+    throw new HardhatPluginError(pluginName, "config.gobind.skipFiles must only include relative paths");
   }
 
   const { cloneDeep } = require("lodash");

@@ -1,16 +1,14 @@
-const Generator = require("./abigen/generator");
-
 import { extendConfig, task, types } from "hardhat/config";
-import { NomicLabsHardhatPluginError } from "hardhat/plugins";
-
+import { HardhatPluginError } from "hardhat/plugins";
 import { TASK_CLEAN, TASK_COMPILE } from "hardhat/builtin-tasks/task-names";
-
 import { ActionType } from "hardhat/types";
 
 import "./type-extensions";
 
 import { getDefaultGoBindConfig } from "./config";
 import { TASK_GOBIND, pluginName } from "./constants";
+
+const Generator = require("./abigen/generator");
 
 interface BindingArgs {
   outdir?: string;
@@ -20,12 +18,13 @@ interface BindingArgs {
   _abigenPath?: string;
 }
 
+// Aplicar configuração padrão
 extendConfig(getDefaultGoBindConfig);
 
 const gobind: ActionType<BindingArgs> = async ({ outdir, deployable, noCompile, v2, _abigenPath }, hre) => {
-  hre.config.gobind.outdir = outdir === undefined ? hre.config.gobind.outdir : outdir;
-  hre.config.gobind.deployable = !deployable ? hre.config.gobind.deployable : deployable;
-  hre.config.gobind.abigenVersion = !v2 ? hre.config.gobind.abigenVersion : "v2";
+  (hre.config as any).gobind.outdir = outdir === undefined ? (hre.config as any).gobind.outdir : outdir;
+  (hre.config as any).gobind.deployable = !deployable ? (hre.config as any).gobind.deployable : deployable;
+  (hre.config as any).gobind.abigenVersion = !v2 ? (hre.config as any).gobind.abigenVersion : "v2";
 
   if (!noCompile) {
     await hre.run(TASK_COMPILE, { generateBind: false, v2: v2, _abigenPath: _abigenPath });
@@ -36,7 +35,7 @@ const gobind: ActionType<BindingArgs> = async ({ outdir, deployable, noCompile, 
 
     console.log(`\nGenerated bindings for ${contracts.length} contracts`);
   } catch (e: any) {
-    throw new NomicLabsHardhatPluginError(pluginName, e.message);
+    throw new HardhatPluginError(pluginName, e.message);
   }
 };
 
@@ -63,7 +62,7 @@ task(TASK_COMPILE)
     ) => {
       await runSuper();
 
-      if (config.gobind.runOnCompile || generateBindings) {
+      if ((config as any).gobind.runOnCompile || generateBindings) {
         await run(TASK_GOBIND, { noCompile: true, v2: v2, _abigenPath: _abigenPath });
       }
     },
@@ -75,7 +74,7 @@ task(TASK_CLEAN, "Clears the cache and deletes all artifacts").setAction(
       try {
         await new Generator(hre).clean();
       } catch (e: any) {
-        throw new NomicLabsHardhatPluginError(pluginName, e.message);
+        throw new HardhatPluginError(pluginName, e.message);
       }
 
     await runSuper();

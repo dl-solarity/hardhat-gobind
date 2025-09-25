@@ -42,7 +42,7 @@
     "lodash": "4.17.21"
   },
   "peerDependencies": {
-    "hardhat": "^2.10.0"
+    "hardhat": "^2.10.0 || ^3.0.0"
   },
   "devDependencies": {
     "@types/chai": "^4.3.20",
