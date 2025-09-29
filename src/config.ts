@@ -44,19 +44,18 @@ export async function resolveUserConfig(
 ): Promise<HardhatConfig> {
   const resolvedConfig = await next(userConfig, resolveConfigurationVariable);
 
+  const gobind = await resolveGobindConfig(userConfig.gobind, resolveConfigurationVariable);
+
   return {
     ...resolvedConfig,
-    gobind: {
-      ...resolvedConfig.gobind,
-      ...omitUndefined(await resolveGobindConfig(userConfig.gobind, resolveConfigurationVariable)),
-    },
+    gobind,
   };
 }
 
 async function resolveGobindConfig(
   gobindConfig: DlGoBindUserConfig | undefined,
   resolveConfigurationVariable: ConfigurationVariableResolver,
-): Promise<Partial<DlGoBindConfig>> {
+): Promise<DlGoBindConfig> {
   const defaultConfig: DlGoBindConfig = {
     outdir: "./generated-types/bindings",
     deployable: false,
@@ -65,6 +64,7 @@ async function resolveGobindConfig(
     verbose: false,
     onlyFiles: [],
     skipFiles: [],
+    abigenPath: "",
   };
 
   if (gobindConfig === undefined) {
@@ -93,6 +93,10 @@ async function resolveGobindConfig(
     resolved.verbose = gobindConfig.verbose;
   }
 
+  if (typeof gobindConfig.abigenPath === "string") {
+    resolved.abigenPath = await resolveConfigurationVariable(gobindConfig.abigenPath).get();
+  }
+
   if (Array.isArray(gobindConfig.onlyFiles)) {
     resolved.onlyFiles = await Promise.all(
       gobindConfig.onlyFiles.map((p: string) => resolveConfigurationVariable(p).get()),
@@ -106,14 +110,4 @@ async function resolveGobindConfig(
   }
 
   return resolved;
-}
-
-function omitUndefined<T extends Record<string, unknown>>(obj: T): Partial<T> {
-  const out: Partial<T> = {};
-  for (const [key, value] of Object.entries(obj)) {
-    if (value !== undefined) {
-      (out as any)[key] = value;
-    }
-  }
-  return out;
 }

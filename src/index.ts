@@ -25,7 +25,7 @@ const hardhatPlugin: HardhatPlugin = {
           const result = await runSuper(args);
 
           if (hre.config.gobind.runOnCompile) {
-            await hre.tasks.getTask("gobind").run({});
+            await hre.tasks.getTask("gobind").run({ noCompile: true, abigenPath: hre.config.gobind.abigenPath });
           }
 
           return result;
@@ -37,7 +37,7 @@ const hardhatPlugin: HardhatPlugin = {
         default: async (args, hre, runSuper) => {
           if (!args.global)
             try {
-              await new (Generator as any)(hre).clean();
+              await new (Generator as any)(hre, hre.config.gobind.abigenPath).clean();
             } catch (e: any) {
               throw new HardhatPluginError(PLUGIN_ID, "Failed to remove gobind artifacts", e);
             }

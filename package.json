@@ -38,7 +38,7 @@
   "scripts": {
     "prepare": "husky",
     "build": "tsc --build .",
-    "test": "mocha --config .mocharc.json --recursive test/**/*.test.cts --timeout 10000 --exit",
+    "test": "node --enable-source-maps --import ./test/loader-bootstrap.mjs ./node_modules/mocha/bin/mocha.js --config .mocharc.json --recursive \"test/**/*.test.ts\" --timeout 10000 --exit",
     "lint-fix": "prettier --write \"./**/*.{ts,js,sol}\"",
     "publish-to-npm": "npm run build && npm run lint-fix && npm publish ./ --access public"
   },
