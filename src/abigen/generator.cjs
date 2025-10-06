@@ -1,4 +1,4 @@
-require("./wasm/wasm_exec_node");
+require("./wasm/wasm_exec_node.cjs");
 
 const fs = require("fs");
 const fsp = require("fs/promises");
