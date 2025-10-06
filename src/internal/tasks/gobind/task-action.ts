@@ -20,9 +20,18 @@ const gobindAction: NewTaskActionFunction<DlGoBindArgs> = async (
   { outdir, deployable, noCompile, v2, abigenPath },
   hre,
 ) => {
-  hre.config.gobind.outdir = outdir === undefined ? hre.config.gobind.outdir : outdir;
-  hre.config.gobind.deployable = !deployable ? hre.config.gobind.deployable : deployable;
-  hre.config.gobind.abigenVersion = !v2 ? hre.config.gobind.abigenVersion : "v2";
+  if (outdir !== undefined) {
+    hre.config.gobind.outdir = outdir;
+  }
+  if (deployable !== undefined) {
+    hre.config.gobind.deployable = deployable;
+  }
+  if (v2) {
+    hre.config.gobind.abigenVersion = "v2";
+  }
+  if (abigenPath !== undefined && abigenPath !== "") {
+    hre.config.gobind.abigenPath = abigenPath;
+  }
 
   if (!noCompile) {
     await hre.tasks.getTask("compile").run({
@@ -32,7 +41,8 @@ const gobindAction: NewTaskActionFunction<DlGoBindArgs> = async (
   }
 
   try {
-    const contracts = await new (Generator as any)(hre, abigenPath).generate();
+    const effectiveAbigenPath = abigenPath && abigenPath !== "" ? abigenPath : hre.config.gobind.abigenPath;
+    const contracts = await new (Generator as any)(hre, effectiveAbigenPath).generate();
 
     console.log(`\nGenerated bindings for ${contracts.length} contracts`);
   } catch (e: any) {

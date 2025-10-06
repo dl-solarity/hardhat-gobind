@@ -3,12 +3,10 @@ import { isAbsolute } from "path";
 import type { ConfigurationVariableResolver, HardhatConfig, HardhatUserConfig } from "hardhat/types/config";
 import type { ConfigHooks, HardhatUserConfigValidationError } from "hardhat/types/hooks";
 
-import { HardhatPluginError } from "hardhat/plugins";
 import { validateUserConfigZodType } from "@nomicfoundation/hardhat-zod-utils";
 
 import { z } from "zod";
 
-import { PLUGIN_ID } from "./constants.js";
 import type { DlGoBindConfig, DlGoBindUserConfig } from "./types.js";
 
 export default async (): Promise<Partial<ConfigHooks>> => ({
@@ -23,6 +21,7 @@ const userConfigType = z.object({
       deployable: z.boolean().optional(),
       runOnCompile: z.boolean().optional(),
       abigenVersion: z.enum(["v1", "v2"]).optional(),
+      abigenPath: z.string().optional(),
       verbose: z.boolean().optional(),
       onlyFiles: z.array(z.string().refine((p) => !isAbsolute(p), "Expected a relative path")).optional(),
       skipFiles: z.array(z.string().refine((p) => !isAbsolute(p), "Expected a relative path")).optional(),
@@ -64,7 +63,7 @@ async function resolveGobindConfig(
     verbose: false,
     onlyFiles: [],
     skipFiles: [],
-    abigenPath: "",
+    abigenPath: "./node_modules/@solarity/hardhat-gobind/bin/abigen.wasm",
   };
 
   if (gobindConfig === undefined) {

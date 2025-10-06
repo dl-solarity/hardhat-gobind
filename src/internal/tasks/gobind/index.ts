@@ -25,8 +25,8 @@ const gobindTask: NewTaskDefinition = task(["gobind"], "Generate Go bindings for
   .addOption({
     name: "abigenPath",
     type: ArgumentType.STRING_WITHOUT_DEFAULT,
-    description: "",
-    defaultValue: "",
+    description: "Path to the abigen binary",
+    defaultValue: "./node_modules/@solarity/hardhat-gobind/bin/abigen.wasm",
   })
   .setAction(() => import("./task-action.js"))
   .build();
