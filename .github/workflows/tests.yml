@@ -16,6 +16,7 @@ jobs:
       matrix:
         node:
           - 22
+          - 22.17
     steps:
       - uses: actions/setup-node@v3
         with:
