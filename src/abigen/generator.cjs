@@ -5,7 +5,10 @@ const fsp = require("fs/promises");
 const path = require("path");
 
 module.exports = class Generator {
-  constructor(hre, abigenPath = "./node_modules/@solarity/hardhat-gobind/bin/abigen.wasm") {
+  constructor(
+    hre,
+    abigenPath = "./node_modules/@solarity/hardhat-gobind/bin/abigen.wasm",
+  ) {
     this.hre = hre;
     this.abigenVersion = hre.config.gobind.abigenVersion;
 
@@ -18,8 +21,12 @@ module.exports = class Generator {
     this.artifacts = hre.artifacts;
     this.outDir = path.resolve(hre.config.gobind.outdir);
     this.deployable = hre.config.gobind.deployable;
-    this.onlyFiles = hre.config.gobind.onlyFiles.map((p) => this._toUnixPath(path.normalize(p)));
-    this.skipFiles = hre.config.gobind.skipFiles.map((p) => this._toUnixPath(path.normalize(p)));
+    this.onlyFiles = hre.config.gobind.onlyFiles.map((p) =>
+      this._toUnixPath(path.normalize(p)),
+    );
+    this.skipFiles = hre.config.gobind.skipFiles.map((p) =>
+      this._toUnixPath(path.normalize(p)),
+    );
   }
 
   async generate() {
@@ -35,13 +42,16 @@ module.exports = class Generator {
     const filtered = namesWithSources
       .filter(({ source }) => {
         return (
-          (this.onlyFiles.length === 0 || this._contains(this.onlyFiles, source)) &&
+          (this.onlyFiles.length === 0 ||
+            this._contains(this.onlyFiles, source)) &&
           !this._contains(this.skipFiles, source)
         );
       })
       .map(({ name }) => name);
 
-    this._verboseLog(`${names.length} compiled contracts found, skipping ${names.length - filtered.length} of them\n`);
+    this._verboseLog(
+      `${names.length} compiled contracts found, skipping ${names.length - filtered.length} of them\n`,
+    );
 
     await this._generate(filtered);
 
@@ -74,7 +84,10 @@ module.exports = class Generator {
 
       const abiPath = `${this.outDir}/${contract}.abi`;
 
-      const packageName = contract.replaceAll("-", "").replaceAll("_", "").toLowerCase();
+      const packageName = contract
+        .replaceAll("-", "")
+        .replaceAll("_", "")
+        .toLowerCase();
 
       const genDir = `${this.outDir}/${path.dirname(source)}/${packageName}`;
       const genPath = `${genDir}/${contract}.${this.lang}`;
@@ -119,11 +132,18 @@ module.exports = class Generator {
       return parentTokens.every((t, i) => childTokens[i] === t);
     };
 
-    return pathList === undefined ? false : pathList.some((p) => isSubPath(p, source));
+    return pathList === undefined
+      ? false
+      : pathList.some((p) => isSubPath(p, source));
   }
 
   _verboseLog(msg) {
-    if (this.hre && this.hre.config && this.hre.config.gobind && this.hre.config.gobind.verbose) {
+    if (
+      this.hre &&
+      this.hre.config &&
+      this.hre.config.gobind &&
+      this.hre.config.gobind.verbose
+    ) {
       console.log(msg);
     }
   }
@@ -135,7 +155,10 @@ module.exports = class Generator {
     go.env = Object.assign({ TMPDIR: require("os").tmpdir() }, process.env);
 
     try {
-      const abigenObj = await WebAssembly.instantiate(await fsp.readFile(path), go.importObject);
+      const abigenObj = await WebAssembly.instantiate(
+        await fsp.readFile(path),
+        go.importObject,
+      );
 
       await go.run(abigenObj.instance);
       go._pendingEvent = { id: 0 };
@@ -144,5 +167,3 @@ module.exports = class Generator {
     }
   }
 };
-
-

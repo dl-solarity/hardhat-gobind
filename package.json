@@ -39,8 +39,9 @@
     "prepare": "husky",
     "build": "tsc --build .",
     "test": "node --enable-source-maps --import ./test/loader-bootstrap.mjs ./node_modules/mocha/bin/mocha.js --config .mocharc.json --recursive \"test/**/*.test.ts\" --timeout 10000 --exit",
-    "lint-fix": "prettier --write \"./**/*.{ts,js,sol}\"",
-    "publish-to-npm": "npm run build && npm run lint-fix && npm publish ./ --access public"
+    "lint-fix": "prettier --write \"./**/*.{ts,js,sol,cjs,cts}\"",
+    "publish-to-npm": "npm run build && npm run lint-fix && npm publish ./ --access public",
+    "eslint-check": "eslint ."
   },
   "dependencies": {
     "@nomicfoundation/hardhat-utils": "3.0.0",

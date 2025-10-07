@@ -9,6 +9,6 @@ export interface DlGoBindConfig {
   abigenPath: string;
 }
 
-export interface DlGoBindUserConfig extends Partial<DlGoBindConfig> {}
+export type DlGoBindUserConfig = Partial<DlGoBindConfig>;
 
 type abigenVersionType = "v1" | "v2";

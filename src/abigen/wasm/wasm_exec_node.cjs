@@ -36,6 +36,3 @@ Object.defineProperty(globalThis, "crypto", {
 });
 
 require("./wasm_exec.cjs");
-
-
-

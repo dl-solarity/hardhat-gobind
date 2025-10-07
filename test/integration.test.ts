@@ -31,9 +31,7 @@ describe("GoBind x Hardhat integration", function () {
         useEnvironment("hardhat-project-undefined-config");
 
         it("does not generate bindings with --no-compile and no artifacts", async function () {
-          const args: any = { noCompile: true, ...abigenPath };
-
-          await this.env.tasks.getTask("gobind").run(args);
+          await this.env.tasks.getTask("gobind").run({ noCompile: true, ...abigenPath });
 
           assertNotExists(this.outdir);
         });

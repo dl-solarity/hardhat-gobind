@@ -4,7 +4,6 @@ import { HardhatPluginError } from "@nomicfoundation/hardhat-errors";
 
 import { PLUGIN_ID } from "../../../constants.js";
 // Type import for CJS generator declarations
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import Generator from "../../../abigen/generator.cjs";
 
