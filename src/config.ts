@@ -1,12 +1,60 @@
 import { isAbsolute } from "path";
 
-import { ConfigExtender } from "hardhat/types";
-import { NomicLabsHardhatPluginError } from "hardhat/plugins";
+import type { ConfigurationVariableResolver, HardhatConfig, HardhatUserConfig } from "hardhat/types/config";
+import type { ConfigHooks, HardhatUserConfigValidationError } from "hardhat/types/hooks";
 
-import { pluginName } from "./constants";
-import { DlGoBindConfig } from "./types";
+import { validateUserConfigZodType } from "@nomicfoundation/hardhat-zod-utils";
 
-export const getDefaultGoBindConfig: ConfigExtender = (resolvedConfig, config) => {
+import { z } from "zod";
+
+import type { DlGoBindConfig, DlGoBindUserConfig } from "./types.js";
+
+export default async (): Promise<Partial<ConfigHooks>> => ({
+  validateUserConfig,
+  resolveUserConfig,
+});
+
+const userConfigType = z.object({
+  gobind: z
+    .object({
+      outdir: z.string().optional(),
+      deployable: z.boolean().optional(),
+      runOnCompile: z.boolean().optional(),
+      abigenVersion: z.enum(["v1", "v2"]).optional(),
+      abigenPath: z.string().optional(),
+      verbose: z.boolean().optional(),
+      onlyFiles: z.array(z.string().refine((p) => !isAbsolute(p), "Expected a relative path")).optional(),
+      skipFiles: z.array(z.string().refine((p) => !isAbsolute(p), "Expected a relative path")).optional(),
+    })
+    .optional(),
+});
+
+export async function validateUserConfig(userConfig: HardhatUserConfig): Promise<HardhatUserConfigValidationError[]> {
+  return validateUserConfigZodType(userConfig, userConfigType);
+}
+
+export async function resolveUserConfig(
+  userConfig: HardhatUserConfig,
+  resolveConfigurationVariable: ConfigurationVariableResolver,
+  next: (
+    nextUserConfig: HardhatUserConfig,
+    nextResolveConfigurationVariable: ConfigurationVariableResolver,
+  ) => Promise<HardhatConfig>,
+): Promise<HardhatConfig> {
+  const resolvedConfig = await next(userConfig, resolveConfigurationVariable);
+
+  const gobind = await resolveGobindConfig(userConfig.gobind, resolveConfigurationVariable);
+
+  return {
+    ...resolvedConfig,
+    gobind,
+  };
+}
+
+async function resolveGobindConfig(
+  gobindConfig: DlGoBindUserConfig | undefined,
+  resolveConfigurationVariable: ConfigurationVariableResolver,
+): Promise<DlGoBindConfig> {
   const defaultConfig: DlGoBindConfig = {
     outdir: "./generated-types/bindings",
     deployable: false,
@@ -15,24 +63,50 @@ export const getDefaultGoBindConfig: ConfigExtender = (resolvedConfig, config) =
     verbose: false,
     onlyFiles: [],
     skipFiles: [],
+    abigenPath: "./node_modules/@solarity/hardhat-gobind/bin/abigen.wasm",
   };
 
-  if (config.gobind === undefined) {
-    resolvedConfig.gobind = defaultConfig;
-    return;
+  if (gobindConfig === undefined) {
+    return defaultConfig;
   }
 
-  if (!areRelativePaths(config.gobind.onlyFiles)) {
-    throw new NomicLabsHardhatPluginError(pluginName, "config.gobind.onlyFiles must only include relative paths");
+  const resolved: DlGoBindConfig = { ...defaultConfig };
+
+  if (typeof gobindConfig.outdir === "string") {
+    resolved.outdir = await resolveConfigurationVariable(gobindConfig.outdir).get();
   }
 
-  if (!areRelativePaths(config.gobind.skipFiles)) {
-    throw new NomicLabsHardhatPluginError(pluginName, "config.gobind.skipFiles must only include relative paths");
+  if (typeof gobindConfig.deployable === "boolean") {
+    resolved.deployable = gobindConfig.deployable;
   }
 
-  const { cloneDeep } = require("lodash");
-  const customConfig = cloneDeep(config.gobind);
-  resolvedConfig.gobind = { ...defaultConfig, ...customConfig };
-};
+  if (typeof gobindConfig.runOnCompile === "boolean") {
+    resolved.runOnCompile = gobindConfig.runOnCompile;
+  }
 
-const areRelativePaths = (array?: string[]): boolean => array === undefined || array.every((p) => !isAbsolute(p));
+  if (typeof gobindConfig.abigenVersion === "string") {
+    resolved.abigenVersion = gobindConfig.abigenVersion as DlGoBindConfig["abigenVersion"];
+  }
+
+  if (typeof gobindConfig.verbose === "boolean") {
+    resolved.verbose = gobindConfig.verbose;
+  }
+
+  if (typeof gobindConfig.abigenPath === "string") {
+    resolved.abigenPath = await resolveConfigurationVariable(gobindConfig.abigenPath).get();
+  }
+
+  if (Array.isArray(gobindConfig.onlyFiles)) {
+    resolved.onlyFiles = await Promise.all(
+      gobindConfig.onlyFiles.map((p: string) => resolveConfigurationVariable(p).get()),
+    );
+  }
+
+  if (Array.isArray(gobindConfig.skipFiles)) {
+    resolved.skipFiles = await Promise.all(
+      gobindConfig.skipFiles.map((p: string) => resolveConfigurationVariable(p).get()),
+    );
+  }
+
+  return resolved;
+}

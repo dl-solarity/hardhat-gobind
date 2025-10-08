@@ -2,14 +2,10 @@ import { assert } from "chai";
 import { resolve } from "path";
 import { existsSync } from "fs";
 
-import { TASK_CLEAN, TASK_COMPILE } from "hardhat/builtin-tasks/task-names";
-
-import { useEnvironment } from "./helpers";
-
-import { TASK_GOBIND } from "../src/constants";
+import { useEnvironment } from "./helpers.js";
 
 describe("GoBind x Hardhat integration", function () {
-  let abigenPath: { v2?: boolean; _abigenPath: string };
+  let abigenPath: { v2?: boolean; abigenPath: string };
 
   const assertExists = (path: string) => assert.isTrue(existsSync(path), `path ${path} should exist`);
   const assertNotExists = (path: string) => assert.isFalse(existsSync(path), `path ${path} should not exist`);
@@ -25,9 +21,9 @@ describe("GoBind x Hardhat integration", function () {
     describe(setupName, () => {
       beforeEach(async () => {
         if (setupName == "abigen version 1") {
-          abigenPath = { _abigenPath: "../../../bin/abigen.wasm" };
+          abigenPath = { abigenPath: "../../../bin/abigen.wasm" };
         } else {
-          abigenPath = { v2: true, _abigenPath: "../../../bin/abigen.wasm" };
+          abigenPath = { v2: true, abigenPath: "../../../bin/abigen.wasm" };
         }
       });
 
@@ -35,7 +31,7 @@ describe("GoBind x Hardhat integration", function () {
         useEnvironment("hardhat-project-undefined-config");
 
         it("does not generate bindings with --no-compile and no artifacts", async function () {
-          await this.env.run(TASK_GOBIND, { noCompile: true, ...abigenPath });
+          await this.env.tasks.getTask("gobind").run({ noCompile: true, ...abigenPath });
 
           assertNotExists(this.outdir);
         });
@@ -43,25 +39,29 @@ describe("GoBind x Hardhat integration", function () {
         it("compiles and generates bindings", async function () {
           assertNotExists(this.outdir);
 
-          await this.env.run(TASK_GOBIND, abigenPath);
+          await this.env.tasks.getTask("gobind").run(abigenPath);
 
           assertContractsGenerated(this.outdir);
         });
 
         it("cleans up generated bindings", async function () {
-          await this.env.run(TASK_COMPILE, { generateBindings: true, ...abigenPath });
+          this.env.config.gobind.runOnCompile = true;
+          this.env.config.gobind.abigenPath = abigenPath.abigenPath;
+          await this.env.tasks.getTask("compile").run({ quiet: true, defaultBuildProfile: "production" });
 
           assertExists(this.outdir);
 
-          await this.env.run(TASK_CLEAN);
+          await this.env.tasks.getTask("clean").run({});
 
           assertNotExists(this.outdir);
         });
 
-        it("generates bindings on compilation with --generate-bindings", async function () {
+        it("generates bindings on compilation when runOnCompile is enabled", async function () {
           assertNotExists(this.outdir);
 
-          await this.env.run(TASK_COMPILE, { generateBindings: true, ...abigenPath });
+          this.env.config.gobind.runOnCompile = true;
+          this.env.config.gobind.abigenPath = abigenPath.abigenPath;
+          await this.env.tasks.getTask("compile").run({ quiet: true, defaultBuildProfile: "production" });
 
           assertContractsGenerated(this.outdir);
         });
@@ -117,7 +117,7 @@ describe("GoBind x Hardhat integration", function () {
         };
 
         it("correctly generates bindings for all contracts", async function () {
-          await this.env.run(TASK_GOBIND, abigenPath);
+          await this.env.tasks.getTask("gobind").run(abigenPath);
 
           assertGenerated(this.outdir, allPaths);
           assertNotGenerated(this.outdir, []);
@@ -127,7 +127,7 @@ describe("GoBind x Hardhat integration", function () {
           const ownablePath = "@openzeppelin/contracts/access/ownable/Ownable.go";
           this.env.config.gobind.onlyFiles = testCases[0].only;
 
-          await this.env.run(TASK_GOBIND, abigenPath);
+          await this.env.tasks.getTask("gobind").run(abigenPath);
 
           assertGenerated(this.outdir, [ownablePath]);
           assertNotGenerated(
@@ -138,7 +138,7 @@ describe("GoBind x Hardhat integration", function () {
 
         it(`for ${caseToString(1)} generates only contracts and interfaces`, async function () {
           this.env.config.gobind.onlyFiles = testCases[1].only;
-          await this.env.run(TASK_GOBIND, abigenPath);
+          await this.env.tasks.getTask("gobind").run(abigenPath);
 
           assertGenerated(this.outdir, [...contractPaths, ...interfacePaths]);
           assertNotGenerated(this.outdir, dependecyPaths);
@@ -146,7 +146,7 @@ describe("GoBind x Hardhat integration", function () {
 
         it(`for ${caseToString(2)} generates for all except Mock1.go and Mock2.go`, async function () {
           this.env.config.gobind.skipFiles = testCases[2].skip;
-          await this.env.run(TASK_GOBIND, abigenPath);
+          await this.env.tasks.getTask("gobind").run(abigenPath);
 
           assertGenerated(this.outdir, [...interfacePaths, ...dependecyPaths]);
           assertNotGenerated(this.outdir, contractPaths);
@@ -154,7 +154,7 @@ describe("GoBind x Hardhat integration", function () {
 
         it(`for ${caseToString(3)} generates for all except dependencies`, async function () {
           this.env.config.gobind.skipFiles = testCases[3].skip;
-          await this.env.run(TASK_GOBIND, abigenPath);
+          await this.env.tasks.getTask("gobind").run(abigenPath);
 
           assertGenerated(this.outdir, [...contractPaths, ...interfacePaths]);
           assertNotGenerated(this.outdir, dependecyPaths);
@@ -163,7 +163,7 @@ describe("GoBind x Hardhat integration", function () {
         it(`for ${caseToString(4)} generates contracts, skips dependencies and interfaces`, async function () {
           this.env.config.gobind.onlyFiles = testCases[4].only;
           this.env.config.gobind.skipFiles = testCases[4].skip;
-          await this.env.run(TASK_GOBIND, abigenPath);
+          await this.env.tasks.getTask("gobind").run(abigenPath);
 
           assertGenerated(this.outdir, [...contractPaths]);
           assertNotGenerated(this.outdir, [...interfacePaths, ...dependecyPaths]);
@@ -173,7 +173,7 @@ describe("GoBind x Hardhat integration", function () {
           this.env.config.gobind.onlyFiles = testCases[5].only;
           this.env.config.gobind.skipFiles = testCases[5].skip;
 
-          await this.env.run(TASK_GOBIND, abigenPath);
+          await this.env.tasks.getTask("gobind").run(abigenPath);
 
           assertNotGenerated(this.outdir, allPaths);
         });
@@ -184,9 +184,11 @@ describe("GoBind x Hardhat integration", function () {
 
         it("generates bindings into the custom outdir", async function () {
           const outdir = resolve("go");
+
           assertNotExists(outdir);
 
-          await this.env.run(TASK_GOBIND, abigenPath);
+          this.env.config.gobind.runOnCompile = false;
+          await this.env.tasks.getTask("gobind").run({ outdir, ...abigenPath });
 
           assertContractsGenerated(outdir);
         });
@@ -197,17 +199,10 @@ describe("GoBind x Hardhat integration", function () {
 
           assertNotExists(outdir);
 
-          await this.env.run(TASK_GOBIND, { outdir: relOutdir, ...abigenPath });
+          this.env.config.gobind.runOnCompile = false;
+          await this.env.tasks.getTask("gobind").run({ outdir: relOutdir, ...abigenPath });
 
           assertContractsGenerated(outdir);
-        });
-
-        it("automatically generates bindings with runOnCompile", async function () {
-          assertNotExists(this.outdir);
-
-          await this.env.run(TASK_COMPILE, abigenPath);
-
-          assertContractsGenerated(this.outdir);
         });
       });
     });

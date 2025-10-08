@@ -2,18 +2,21 @@ import path from "path";
 
 import { assert } from "chai";
 
-import { useEnvironment } from "./helpers";
+import { useEnvironment } from "./helpers.js";
 
-import Generator from "../src/abigen/generator";
+// Type import for CJS generator declarations
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import Generator from "../src/abigen/generator.cjs";
 
 describe("hardhat-gobind configuration extension", function () {
   useEnvironment("hardhat-project-defined-config", "hardhat");
 
-  it("the gobind field should be present", function () {
+  it("the gobind field should be present", async function () {
     assert.isDefined(this.env.config.gobind);
   });
 
-  it("the gobind object should have values from hardhat.env.config.js", function () {
+  it("the gobind object should have values from hardhat.env.config.js", async function () {
     const { gobind } = this.env.config;
 
     assert.equal(gobind.outdir, "go");
@@ -25,7 +28,7 @@ describe("hardhat-gobind configuration extension", function () {
     assert.deepEqual(gobind.skipFiles, ["@openzeppelin", "./contracts/interfaces"]);
   });
 
-  it("should correctly get params from defined config", function () {
+  it("should correctly get params from defined config", async function () {
     const instance = new Generator(this.env);
 
     assert.equal(instance.outDir, path.resolve("go"));
@@ -39,11 +42,11 @@ describe("hardhat-gobind configuration extension", function () {
 describe("hardhat-gobind configuration defaults in an empty project", function () {
   useEnvironment("hardhat-project-undefined-config", "hardhat");
 
-  it("the gobind field should be present", function () {
+  it("the gobind field should be present", async function () {
     assert.isDefined(this.env.config.gobind);
   });
 
-  it("fields of the gobind object should be set to default", function () {
+  it("fields of the gobind object should be set to default", async function () {
     const { gobind } = this.env.config;
 
     assert.equal(gobind.outdir, "./generated-types/bindings");
@@ -55,7 +58,7 @@ describe("hardhat-gobind configuration defaults in an empty project", function (
     assert.deepEqual(gobind.skipFiles, []);
   });
 
-  it("should correctly get params from undefined config", function () {
+  it("should correctly get params from undefined config", async function () {
     const instance = new Generator(this.env);
 
     assert.equal(instance.outDir, path.resolve("generated-types/bindings"));

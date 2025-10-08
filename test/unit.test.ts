@@ -1,8 +1,11 @@
 import { assert } from "chai";
 
-import { useEnvironment } from "./helpers";
+import { useEnvironment } from "./helpers.js";
 
-import Generator from "../src/abigen/generator";
+// Type import for CJS generator declarations
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import Generator from "../src/abigen/generator.cjs";
 
 describe("GoBind Generator class", function () {
   useEnvironment("hardhat-project-undefined-config");

@@ -6,8 +6,9 @@ export interface DlGoBindConfig {
   verbose: boolean;
   onlyFiles: string[];
   skipFiles: string[];
+  abigenPath: string;
 }
 
-export interface DlGoBindUserConfig extends Partial<DlGoBindConfig> {}
+export type DlGoBindUserConfig = Partial<DlGoBindConfig>;
 
 type abigenVersionType = "v1" | "v2";

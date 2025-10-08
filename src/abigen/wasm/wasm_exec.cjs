@@ -20,7 +20,15 @@
   if (!globalThis.fs) {
     let outputBuf = "";
     globalThis.fs = {
-      constants: { O_WRONLY: -1, O_RDWR: -1, O_CREAT: -1, O_TRUNC: -1, O_APPEND: -1, O_EXCL: -1, O_DIRECTORY: -1 }, // unused
+      constants: {
+        O_WRONLY: -1,
+        O_RDWR: -1,
+        O_CREAT: -1,
+        O_TRUNC: -1,
+        O_APPEND: -1,
+        O_EXCL: -1,
+        O_DIRECTORY: -1,
+      }, // unused
       writeSync(fd, buf) {
         outputBuf += decoder.decode(buf);
         const nl = outputBuf.lastIndexOf("\n");
@@ -150,19 +158,27 @@
   }
 
   if (!globalThis.crypto) {
-    throw new Error("globalThis.crypto is not available, polyfill required (crypto.getRandomValues only)");
+    throw new Error(
+      "globalThis.crypto is not available, polyfill required (crypto.getRandomValues only)",
+    );
   }
 
   if (!globalThis.performance) {
-    throw new Error("globalThis.performance is not available, polyfill required (performance.now only)");
+    throw new Error(
+      "globalThis.performance is not available, polyfill required (performance.now only)",
+    );
   }
 
   if (!globalThis.TextEncoder) {
-    throw new Error("globalThis.TextEncoder is not available, polyfill required");
+    throw new Error(
+      "globalThis.TextEncoder is not available, polyfill required",
+    );
   }
 
   if (!globalThis.TextDecoder) {
-    throw new Error("globalThis.TextDecoder is not available, polyfill required");
+    throw new Error(
+      "globalThis.TextDecoder is not available, polyfill required",
+    );
   }
 
   const encoder = new TextEncoder("utf-8");
@@ -281,7 +297,9 @@
       const loadString = (addr) => {
         const saddr = getInt64(addr + 0);
         const len = getInt64(addr + 8);
-        return decoder.decode(new DataView(this._inst.exports.mem.buffer, saddr, len));
+        return decoder.decode(
+          new DataView(this._inst.exports.mem.buffer, saddr, len),
+        );
       };
 
       const testCallExport = (a, b) => {
@@ -320,7 +338,10 @@
             const fd = getInt64(sp + 8);
             const p = getInt64(sp + 16);
             const n = this.mem.getInt32(sp + 24, true);
-            fs.writeSync(fd, new Uint8Array(this._inst.exports.mem.buffer, p, n));
+            fs.writeSync(
+              fd,
+              new Uint8Array(this._inst.exports.mem.buffer, p, n),
+            );
           },
 
           // func resetMemoryDataView()
@@ -410,7 +431,11 @@
           // func valueSet(v ref, p string, x ref)
           "syscall/js.valueSet": (sp) => {
             sp >>>= 0;
-            Reflect.set(loadValue(sp + 8), loadString(sp + 16), loadValue(sp + 32));
+            Reflect.set(
+              loadValue(sp + 8),
+              loadString(sp + 16),
+              loadValue(sp + 32),
+            );
           },
 
           // func valueDelete(v ref, p string)
@@ -422,13 +447,20 @@
           // func valueIndex(v ref, i int) ref
           "syscall/js.valueIndex": (sp) => {
             sp >>>= 0;
-            storeValue(sp + 24, Reflect.get(loadValue(sp + 8), getInt64(sp + 16)));
+            storeValue(
+              sp + 24,
+              Reflect.get(loadValue(sp + 8), getInt64(sp + 16)),
+            );
           },
 
           // valueSetIndex(v ref, i int, x ref)
           "syscall/js.valueSetIndex": (sp) => {
             sp >>>= 0;
-            Reflect.set(loadValue(sp + 8), getInt64(sp + 16), loadValue(sp + 24));
+            Reflect.set(
+              loadValue(sp + 8),
+              getInt64(sp + 16),
+              loadValue(sp + 24),
+            );
           },
 
           // func valueCall(v ref, m string, args []ref) (ref, bool)
@@ -507,7 +539,10 @@
           // func valueInstanceOf(v ref, t ref) bool
           "syscall/js.valueInstanceOf": (sp) => {
             sp >>>= 0;
-            this.mem.setUint8(sp + 24, loadValue(sp + 8) instanceof loadValue(sp + 16) ? 1 : 0);
+            this.mem.setUint8(
+              sp + 24,
+              loadValue(sp + 8) instanceof loadValue(sp + 16) ? 1 : 0,
+            );
           },
 
           // func copyBytesToGo(dst []byte, src ref) (int, bool)
@@ -515,7 +550,9 @@
             sp >>>= 0;
             const dst = loadSlice(sp + 8);
             const src = loadValue(sp + 32);
-            if (!(src instanceof Uint8Array || src instanceof Uint8ClampedArray)) {
+            if (
+              !(src instanceof Uint8Array || src instanceof Uint8ClampedArray)
+            ) {
               this.mem.setUint8(sp + 48, 0);
               return;
             }
@@ -530,7 +567,9 @@
             sp >>>= 0;
             const dst = loadValue(sp + 8);
             const src = loadSlice(sp + 16);
-            if (!(dst instanceof Uint8Array || dst instanceof Uint8ClampedArray)) {
+            if (
+              !(dst instanceof Uint8Array || dst instanceof Uint8ClampedArray)
+            ) {
               this.mem.setUint8(sp + 48, 0);
               return;
             }
@@ -609,7 +648,9 @@
       // Keep in sync with cmd/link/internal/ld/data.go:wasmMinDataAddr.
       const wasmMinDataAddr = 4096 + 8192;
       if (offset >= wasmMinDataAddr) {
-        throw new Error("total length of command line and environment variables exceeds limit");
+        throw new Error(
+          "total length of command line and environment variables exceeds limit",
+        );
       }
 
       this._inst.exports.run(argc, argv);
