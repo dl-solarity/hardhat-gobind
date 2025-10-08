@@ -14,16 +14,10 @@ This plugin helps you generate `.go` files with bindings to call smart contracts
 npm install --save-dev @solarity/hardhat-gobind
 ```
 
-Add the following statement to your `hardhat.config.js`:
-
-```js
-require("@solarity/hardhat-gobind")
-```
-
-Or, if you are using TypeScript, add this to your `hardhat.config.ts`:
+Add the following statement to your `hardhat.config.ts`:
 
 ```ts
-import "@solarity/hardhat-gobind"
+import hardhatGobind from "@solarity/hardhat-gobind"
 ```
 
 ## Tasks
