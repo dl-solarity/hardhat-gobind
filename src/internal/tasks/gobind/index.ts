@@ -6,9 +6,9 @@ import { task } from "hardhat/config";
 const gobindTask: NewTaskDefinition = task(["gobind"], "Generate Go bindings for compiled contracts")
   .addOption({
     name: "outdir",
-    type: ArgumentType.STRING,
+    type: ArgumentType.STRING_WITHOUT_DEFAULT,
     description: "Output directory for generated bindings (Go package name is derived from it as well)",
-    defaultValue: "./generated-types/bindings",
+    defaultValue: undefined,
   })
   .addFlag({
     name: "deployable",
@@ -26,7 +26,7 @@ const gobindTask: NewTaskDefinition = task(["gobind"], "Generate Go bindings for
     name: "abigenPath",
     type: ArgumentType.STRING_WITHOUT_DEFAULT,
     description: "Path to the abigen binary",
-    defaultValue: "./node_modules/@solarity/hardhat-gobind/bin/abigen.wasm",
+    defaultValue: undefined,
   })
   .setAction(() => import("./task-action.js"))
   .build();

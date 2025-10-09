@@ -28,7 +28,7 @@ const gobindAction: NewTaskActionFunction<DlGoBindArgs> = async (
   if (v2) {
     hre.config.gobind.abigenVersion = "v2";
   }
-  if (abigenPath !== undefined && abigenPath !== "") {
+  if (abigenPath !== undefined) {
     hre.config.gobind.abigenPath = abigenPath;
   }
 
