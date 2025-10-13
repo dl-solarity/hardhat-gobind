@@ -1,6 +1,6 @@
 {
   "name": "@solarity/hardhat-gobind",
-  "version": "2.0.0-rc.0",
+  "version": "2.0.0-rc.1",
   "description": "Generation of smart contract bindings for Golang",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
@@ -37,7 +37,7 @@
   "homepage": "https://github.com/dl-solarity/hardhat-gobind#readme",
   "scripts": {
     "prepare": "husky",
-    "build": "tsc --build .",
+    "build": "tsc --build . && cp -r src/abigen dist/src/abigen",
     "test": "node --enable-source-maps --import ./test/loader-bootstrap.mjs ./node_modules/mocha/bin/mocha.js --config .mocharc.json --recursive \"test/**/*.test.ts\" --timeout 100000 --exit",
     "lint-fix": "prettier --write \"./**/*.{ts,js,sol,cjs,cts}\"",
     "publish-to-npm": "npm run build && npm run lint-fix && npm publish ./ --access public",
