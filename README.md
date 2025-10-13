@@ -17,15 +17,12 @@ npm install --save-dev @solarity/hardhat-gobind
 Add the plugin to your `hardhat.config.ts`:
 
 ```ts
-import type { HardhatUserConfig } from "hardhat/config";
 import hardhatGobind from "@solarity/hardhat-gobind";
 
 const config: HardhatUserConfig = {
     plugins: [hardhatGobind],
     // ... your config
 };
-
-export default config;
 ```
 
 ## Tasks
