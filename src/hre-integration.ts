@@ -52,7 +52,7 @@ function _verboseLog(hre: HardhatRuntimeEnvironment, msg: string) {
   }
 }
 
-function containsPath(pathList: string[], source: string): boolean {
+export function containsPath(pathList: string[], source: string): boolean {
   const isSubPath = (parent: string, child: string) => {
     const parentTokens = parent.split(path.posix.sep).filter((i) => i.length);
     const childTokens = child.split(path.posix.sep).filter((i) => i.length);
