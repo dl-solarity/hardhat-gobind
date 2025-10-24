@@ -55,6 +55,8 @@ const gobindAction: NewTaskActionFunction<DlGoBindArgs> = async (
     const verbose = hre.config.gobind.verbose || false;
 
     await new Generator(outDir, abigenVersion, effectiveAbigenPath).generate(artifacts, deployable, verbose);
+
+    console.log(`\nGenerated bindings for ${artifacts.length} contracts`);
   } catch (e: any) {
     throw new HardhatPluginError(PLUGIN_ID, `Failed to generate bindings: ${e.message}`, e);
   }
