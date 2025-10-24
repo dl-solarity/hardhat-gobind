@@ -1,5 +1,3 @@
-import path from "path";
-
 import { assert } from "chai";
 
 import { useEnvironment } from "./helpers.js";
