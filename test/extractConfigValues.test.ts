@@ -4,11 +4,6 @@ import { assert } from "chai";
 
 import { useEnvironment } from "./helpers.js";
 
-// Type import for CJS generator declarations
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import Generator from "../src/abigen/generator.cjs";
-
 describe("hardhat-gobind configuration extension", function () {
   useEnvironment("hardhat-project-defined-config", "hardhat");
 
@@ -26,16 +21,6 @@ describe("hardhat-gobind configuration extension", function () {
     assert.equal(gobind.verbose, true);
     assert.deepEqual(gobind.onlyFiles, ["./contracts", "local/MyContract.sol"]);
     assert.deepEqual(gobind.skipFiles, ["@openzeppelin", "./contracts/interfaces"]);
-  });
-
-  it("should correctly get params from defined config", async function () {
-    const instance = new Generator(this.env);
-
-    assert.equal(instance.outDir, path.resolve("go"));
-    assert.equal(instance.deployable, true);
-    assert.equal(instance.abigenVersion, "v2");
-    assert.deepEqual(instance.onlyFiles, ["contracts", "local/MyContract.sol"]);
-    assert.deepEqual(instance.skipFiles, ["@openzeppelin", "contracts/interfaces"]);
   });
 });
 
@@ -56,15 +41,5 @@ describe("hardhat-gobind configuration defaults in an empty project", function (
     assert.equal(gobind.abigenVersion, "v1");
     assert.deepEqual(gobind.onlyFiles, []);
     assert.deepEqual(gobind.skipFiles, []);
-  });
-
-  it("should correctly get params from undefined config", async function () {
-    const instance = new Generator(this.env);
-
-    assert.equal(instance.outDir, path.resolve("generated-types/bindings"));
-    assert.equal(instance.deployable, false);
-    assert.equal(instance.abigenVersion, "v1");
-    assert.deepEqual(instance.onlyFiles, []);
-    assert.deepEqual(instance.skipFiles, []);
   });
 });

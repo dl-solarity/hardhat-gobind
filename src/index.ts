@@ -7,9 +7,12 @@ import { HardhatPluginError } from "hardhat/plugins";
 import gobindTask from "./internal/tasks/gobind/index.js";
 
 import { PLUGIN_ID } from "./constants.js";
-// Type import for CJS generator declarations
-// @ts-ignore
-import Generator from "./abigen/generator.cjs";
+
+import { createRequire } from "module";
+
+export { getArtifacts } from "./hre-integration.js";
+
+const Generator = createRequire(import.meta.url)("abigenjs/generator.cjs");
 
 const hardhatPlugin: HardhatPlugin = {
   id: PLUGIN_ID,
@@ -38,7 +41,10 @@ const hardhatPlugin: HardhatPlugin = {
           if (!args.global)
             try {
               const abigenPath = hre.config.gobind.abigenPath || undefined;
-              await new (Generator as any)(hre, abigenPath).clean();
+              const abigenVersion = hre.config.gobind.abigenVersion || "v2";
+              const outDir = hre.config.gobind.outdir || "./generated-types/bindings";
+
+              await new Generator(outDir, abigenVersion, abigenPath).clean();
             } catch (e: any) {
               throw new HardhatPluginError(
                 PLUGIN_ID,
