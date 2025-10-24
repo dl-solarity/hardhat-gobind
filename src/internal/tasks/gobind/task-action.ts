@@ -4,8 +4,9 @@ import { HardhatPluginError } from "@nomicfoundation/hardhat-errors";
 
 import { PLUGIN_ID } from "../../../constants.js";
 
-import { createRequire } from "module";
 import { getArtifacts } from "../../../hre-integration.js";
+
+import { createRequire } from "module";
 const Generator = createRequire(import.meta.url)("abigenjs/generator.cjs");
 
 export interface DlGoBindArgs {
