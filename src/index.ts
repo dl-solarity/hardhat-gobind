@@ -4,15 +4,13 @@ import type { HardhatPlugin } from "hardhat/types/plugins";
 import { overrideTask } from "hardhat/config";
 import { HardhatPluginError } from "hardhat/plugins";
 
+import { Generator } from "abigenjs/generator";
+
 import gobindTask from "./internal/tasks/gobind/index.js";
 
 import { PLUGIN_ID } from "./constants.js";
 
-import { createRequire } from "module";
-
 export { getArtifacts } from "./hre-integration.js";
-
-const Generator = createRequire(import.meta.url)("abigenjs/generator.cjs");
 
 const hardhatPlugin: HardhatPlugin = {
   id: PLUGIN_ID,

@@ -38,7 +38,7 @@
   "scripts": {
     "prepare": "husky",
     "build": "tsc --build .",
-    "test": "node --enable-source-maps --import ./test/loader-bootstrap.mjs ./node_modules/mocha/bin/mocha.js --config .mocharc.json --recursive \"test/**/*.test.ts\" --timeout 100000 --exit",
+    "test": "node --enable-source-maps --import ./test/loader-bootstrap.mjs --no-deprecation ./node_modules/mocha/bin/mocha.js --config .mocharc.json --recursive \"test/**/*.test.ts\" --timeout 100000 --exit",
     "lint-fix": "prettier --write \"./**/*.{ts,js,sol,cjs,cts}\"",
     "publish-to-npm": "npm run build && npm run lint-fix && npm publish ./ --access public",
     "eslint-check": "eslint ."
@@ -46,7 +46,7 @@
   "dependencies": {
     "@nomicfoundation/hardhat-utils": "3.0.0",
     "@nomicfoundation/hardhat-zod-utils": "3.0.0",
-    "abigenjs": "0.1.1",
+    "abigenjs": "0.2.0",
     "lodash": "4.17.21",
     "zod": "3.25.76"
   },

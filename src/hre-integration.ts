@@ -1,13 +1,8 @@
+import { Artifact } from "abigenjs/generator";
+
 import { HardhatRuntimeEnvironment } from "hardhat/types/hre";
 
 import path from "path";
-
-interface Artifact {
-  contractName: string;
-  sourceName: string;
-  abi: any;
-  bytecode: string;
-}
 
 export async function getArtifacts(
   hre: HardhatRuntimeEnvironment,

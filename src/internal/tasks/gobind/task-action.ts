@@ -2,12 +2,11 @@ import type { NewTaskActionFunction } from "hardhat/types/tasks";
 
 import { HardhatPluginError } from "@nomicfoundation/hardhat-errors";
 
+import { Generator } from "abigenjs/generator";
+
 import { PLUGIN_ID } from "../../../constants.js";
 
 import { getArtifacts } from "../../../hre-integration.js";
-
-import { createRequire } from "module";
-const Generator = createRequire(import.meta.url)("abigenjs/generator.cjs");
 
 export interface DlGoBindArgs {
   outdir?: string;
