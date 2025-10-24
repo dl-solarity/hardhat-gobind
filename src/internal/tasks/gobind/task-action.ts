@@ -24,9 +24,9 @@ const gobindAction: NewTaskActionFunction<DlGoBindArgs> = async (
   if (outdir !== undefined) {
     hre.config.gobind.outdir = outdir;
   }
-  if (deployable !== undefined) {
-    hre.config.gobind.deployable = deployable;
-  }
+
+  hre.config.gobind.deployable = deployable || hre.config.gobind.deployable;
+
   if (v2) {
     hre.config.gobind.abigenVersion = "v2";
   }
