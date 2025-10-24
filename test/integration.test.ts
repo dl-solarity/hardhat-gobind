@@ -39,7 +39,7 @@ describe("GoBind x Hardhat integration", function () {
         it("compiles and generates bindings", async function () {
           assertNotExists(this.outdir);
 
-          await this.env.tasks.getTask("gobind").run({ ...abigenPath });
+          await this.env.tasks.getTask("gobind").run(abigenPath);
 
           assertContractsGenerated(this.outdir);
         });
