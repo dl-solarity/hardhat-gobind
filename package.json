@@ -46,7 +46,7 @@
   "dependencies": {
     "@nomicfoundation/hardhat-utils": "3.0.0",
     "@nomicfoundation/hardhat-zod-utils": "3.0.0",
-    "abigenjs": "^0.1.0",
+    "abigenjs": "0.1.1",
     "lodash": "4.17.21",
     "zod": "3.25.76"
   },
