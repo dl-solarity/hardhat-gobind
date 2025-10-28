@@ -50,8 +50,8 @@ export function tryFindAbigenJS(currentPath: string): string {
   // ./node_modules/abigenjs/bin/abigen.wasm
   // if we did not find the AbigenJS there, let's try to find it in the node_modules of the plugin
   const candidates = [
-    path.join("node_modules", "abigenjs", "bin", "abigen.wasm"),
     path.join("node_modules", GOBIND_NPM_PACKAGE, "node_modules", "abigenjs", "bin", "abigen.wasm"),
+    path.join("node_modules", "abigenjs", "bin", "abigen.wasm"),
   ];
 
   for (const candidate of candidates) {
