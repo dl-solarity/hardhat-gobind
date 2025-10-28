@@ -6,7 +6,7 @@
 
 ## What
 
-This plugin helps you generate `.go` files with bindings to call smart contracts from Go code. To produce them, the plugin uses `abigen` in a `wasm` binary form that is built from [go-ethereum/cmd/abigen](https://github.com/ethereum/go-ethereum/tree/master/cmd/abigen) Go module.
+This plugin helps you generate `.go` files with bindings to call smart contracts from Go code. To produce them, the plugin uses `abigenjs` -- a `wasm` binary that is built from [go-ethereum/cmd/abigen](https://github.com/ethereum/go-ethereum/tree/master/cmd/abigen) Go module.
 
 ## Installation
 
