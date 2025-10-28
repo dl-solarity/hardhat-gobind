@@ -21,9 +21,9 @@ describe("GoBind x Hardhat integration", function () {
     describe(setupName, () => {
       beforeEach(async () => {
         if (setupName == "abigen version 1") {
-          abigenPath = { abigenPath: "../../../bin/abigen.wasm" };
+          abigenPath = { abigenPath: "../../../node_modules/abigenjs/bin/abigen.wasm" };
         } else {
-          abigenPath = { v2: true, abigenPath: "../../../bin/abigen.wasm" };
+          abigenPath = { v2: true, abigenPath: "../../../node_modules/abigenjs/bin/abigen.wasm" };
         }
       });
 

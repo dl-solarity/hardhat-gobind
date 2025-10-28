@@ -1,17 +1,9 @@
 import { assert } from "chai";
 
-import { useEnvironment } from "./helpers.js";
+import { containsPath } from "../src/hre-integration.js";
 
-// Type import for CJS generator declarations
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import Generator from "../src/abigen/generator.cjs";
-
-describe("GoBind Generator class", function () {
-  useEnvironment("hardhat-project-undefined-config");
-
+describe("containsPath", function () {
   it("_contains should correctly process paths", function () {
-    const instance = new Generator(this.env);
     const pathList = ["contracts/interfaces", "contracts/A.sol", "contracts/sub/B.sol", "contracts/sub/sub2/sub3"];
     const testCases = [
       { src: "contracts/A.sol", exp: true },
@@ -29,6 +21,6 @@ describe("GoBind Generator class", function () {
       { src: "above/contracts/interfaces/I.sol", exp: false },
     ];
 
-    testCases.forEach((c) => assert.equal(instance._contains(pathList, c.src), c.exp));
+    testCases.forEach((c) => assert.equal(containsPath(pathList, c.src), c.exp));
   });
 });

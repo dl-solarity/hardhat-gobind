@@ -63,7 +63,7 @@ async function resolveGobindConfig(
     verbose: false,
     onlyFiles: [],
     skipFiles: [],
-    abigenPath: "./node_modules/@solarity/hardhat-gobind/bin/abigen.wasm",
+    abigenPath: "./node_modules/abigenjs/bin/abigen.wasm",
   };
 
   if (gobindConfig === undefined) {

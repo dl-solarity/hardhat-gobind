@@ -2,10 +2,11 @@ import type { NewTaskActionFunction } from "hardhat/types/tasks";
 
 import { HardhatPluginError } from "@nomicfoundation/hardhat-errors";
 
+import { Generator } from "abigenjs/generator";
+
 import { PLUGIN_ID } from "../../../constants.js";
-// Type import for CJS generator declarations
-// @ts-ignore
-import Generator from "../../../abigen/generator.cjs";
+
+import { getArtifacts } from "../../../hre-integration.js";
 
 export interface DlGoBindArgs {
   outdir?: string;
@@ -22,9 +23,9 @@ const gobindAction: NewTaskActionFunction<DlGoBindArgs> = async (
   if (outdir !== undefined) {
     hre.config.gobind.outdir = outdir;
   }
-  if (deployable !== undefined) {
-    hre.config.gobind.deployable = deployable;
-  }
+
+  hre.config.gobind.deployable = deployable || hre.config.gobind.deployable;
+
   if (v2) {
     hre.config.gobind.abigenVersion = "v2";
   }
@@ -40,10 +41,22 @@ const gobindAction: NewTaskActionFunction<DlGoBindArgs> = async (
   }
 
   try {
-    const effectiveAbigenPath = abigenPath && abigenPath !== "" ? abigenPath : hre.config.gobind.abigenPath;
-    const contracts = await new (Generator as any)(hre, effectiveAbigenPath).generate();
+    const onlyFiles = hre.config.gobind.onlyFiles || [];
+    const skipFiles = hre.config.gobind.skipFiles || [];
 
-    console.log(`\nGenerated bindings for ${contracts.length} contracts`);
+    const artifacts = await getArtifacts(hre, onlyFiles, skipFiles);
+
+    const outDir = hre.config.gobind.outdir || "./generated-types/bindings";
+
+    const abigenVersion = hre.config.gobind.abigenVersion || "v2";
+    const effectiveAbigenPath = abigenPath && abigenPath !== "" ? abigenPath : hre.config.gobind.abigenPath;
+
+    const deployable = hre.config.gobind.deployable || false;
+    const verbose = hre.config.gobind.verbose || false;
+
+    await new Generator(outDir, abigenVersion, effectiveAbigenPath).generate(artifacts, deployable, verbose);
+
+    console.log(`\nGenerated bindings for ${artifacts.length} contracts`);
   } catch (e: any) {
     throw new HardhatPluginError(PLUGIN_ID, `Failed to generate bindings: ${e.message}`, e);
   }
