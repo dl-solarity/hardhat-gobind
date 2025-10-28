@@ -1,8 +1,12 @@
+import { existsSync } from "fs";
+
 import { Artifact } from "abigenjs/generator";
 
 import { HardhatRuntimeEnvironment } from "hardhat/types/hre";
 
 import path from "path";
+
+import { GOBIND_NPM_PACKAGE } from "./constants.js";
 
 export async function getArtifacts(
   hre: HardhatRuntimeEnvironment,
@@ -35,6 +39,28 @@ export async function getArtifacts(
   _verboseLog(hre, `${names.length} compiled contracts found, skipping ${names.length - filtered.length} of them\n`);
 
   return filtered;
+}
+
+export function tryFindAbigenJS(currentPath: string): string {
+  if (existsSync(currentPath)) {
+    return currentPath;
+  }
+
+  // Here we expect that the currentPath to the AbigenJS is as follows:
+  // ./node_modules/abigenjs/bin/abigen.wasm
+  // if we did not find the AbigenJS there, let's try to find it in the node_modules of the plugin
+  const candidates = [
+    path.join("node_modules", GOBIND_NPM_PACKAGE, "node_modules", "abigenjs", "bin", "abigen.wasm"),
+    path.join("node_modules", "abigenjs", "bin", "abigen.wasm"),
+  ];
+
+  for (const candidate of candidates) {
+    if (existsSync(candidate)) {
+      return candidate;
+    }
+  }
+
+  throw new Error("AbigenJS not found");
 }
 
 function toUnixPath(userPath: string) {

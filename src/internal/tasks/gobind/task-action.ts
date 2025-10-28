@@ -6,7 +6,7 @@ import { Generator } from "abigenjs/generator";
 
 import { PLUGIN_ID } from "../../../constants.js";
 
-import { getArtifacts } from "../../../hre-integration.js";
+import { getArtifacts, tryFindAbigenJS } from "../../../hre-integration.js";
 
 export interface DlGoBindArgs {
   outdir?: string;
@@ -49,7 +49,9 @@ const gobindAction: NewTaskActionFunction<DlGoBindArgs> = async (
     const outDir = hre.config.gobind.outdir || "./generated-types/bindings";
 
     const abigenVersion = hre.config.gobind.abigenVersion || "v2";
-    const effectiveAbigenPath = abigenPath && abigenPath !== "" ? abigenPath : hre.config.gobind.abigenPath;
+    const effectiveAbigenPath = tryFindAbigenJS(
+      abigenPath && abigenPath !== "" ? abigenPath : hre.config.gobind.abigenPath,
+    );
 
     const deployable = hre.config.gobind.deployable || false;
     const verbose = hre.config.gobind.verbose || false;

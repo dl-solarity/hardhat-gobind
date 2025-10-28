@@ -8,7 +8,7 @@ import { Generator } from "abigenjs/generator";
 
 import gobindTask from "./internal/tasks/gobind/index.js";
 
-import { PLUGIN_ID } from "./constants.js";
+import { GOBIND_NPM_PACKAGE, PLUGIN_ID } from "./constants.js";
 
 export { getArtifacts } from "./hre-integration.js";
 
@@ -56,7 +56,7 @@ const hardhatPlugin: HardhatPlugin = {
       }))
       .build(),
   ],
-  npmPackage: "@solarity/hardhat-gobind",
+  npmPackage: GOBIND_NPM_PACKAGE,
 } satisfies HardhatPlugin;
 
 export default hardhatPlugin;
